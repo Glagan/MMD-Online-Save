@@ -1,0 +1,119 @@
+# MyMangaDex - Online Save
+
+Store MyMangaDex online saves to be able to sync between devices or browsers.
+
+## Requirements
+
+You need the same requirements as [Lumen](https://lumen.laravel.com/):
+
+* [Composer](http://getcomposer.org/)
+* PHP >= 7.1.3
+* OpenSSL PHP Extension
+* PDO PHP Extension
+* Mbstring PHP Extension
+
+## How to use
+
+First, install all dependencies:
+
+```bash
+composer update
+```
+
+Then you need to set the variables in the ``.env`` file, the required one are ``APP_KEY`` and the ``DB_`` parameters.  
+Create the database with the same name you wrote in the ``.env`` file.  
+With a database ready, you can create the tables by running:
+
+```bash
+php artisan db:create
+```
+
+You're ready to go ! You can update the API url in the MyMangaDex options to use the one you just hosted.
+
+## Authentification
+
+There is two authentification methods that can be combined.  
+The first one, ``Token Auth``, is a single header ``X-Auth-Token`` that contain the token of the user that will be used.  
+The second one, ``Credentials Auth``, is two headers ``X-Auth-Name`` and ``X-Auth-Pass`` that contain the username and password of the user.
+
+## Endpoints
+
+| Path | Method | Auth | Description |
+|---|---|---|---|
+| /user | ``POST`` | None | Register an User. |
+| /user/self | ``GET`` | Token | Get informations about the user. |
+| /user/self | ``POST`` | Token & Credentials | Update the user. |
+| /user/self | ``DELETE`` | Token & Credentials | Delete the User and every titles. |
+| /user/self/token/refresh | ``POST`` | Credentials | Generate a new token for the user. |
+| /user/self/options | ``GET`` | Token | Get the list of options. |
+| /user/self/options | ``POST`` | Token | Update the list of options. |
+| /user/self/title | ``GET`` | Token | List of all titles of the user. |
+| /user/self/title | ``POST`` | Token & Credentials | Update all titles of the user. |
+| /user/self/title/{mangaDexId} | ``GET`` | Token | Get all informations about a specific title of the user. |
+| /user/self/title/{mangaDexId} | ``POST`` | Token | Update last opened chapter of the title {mangaDexId} to the content of the passed object.<br>Also look at the ``options.saveAllOpened`` and ``options.maxChapterSaved`` options to add the chapter to the chapters list and pop old ones if needed. |
+
+## Data
+
+### User
+
+The minimal data is used to make each accounts unique, safe, and to allow optional retrieval.
+
+| Name | Value |
+|---|---|
+| username | The username you will use to login. |
+| email | Optionnal email to retrieve your password. |
+| password | The password of your account. |
+| token | Unique token used to authentificate. |
+| options | Your MyMangaDex options. |
+| titles | The list of saved titles, see [Title](#Title) to find the value for each. |
+| last_sync | Date of the last synchronization, when your data has been imported on a new device. |
+| last_update | Date of the last update, when the data saved online has been updated. |
+| creation_date | Date of the account creation. |
+
+### Title
+
+| Name | Value |
+|---|---|
+| user | The id of the [User](#User) the title belongs to. |
+| mal_id | The MyAnimeList id. |
+| md_id | The MangaDex id. |
+| last | The last opened chapter. |
+| chapters | The list of saved [Chapter](#Chapter) for the title, empty if the option is disabled. |
+
+### Chapter
+
+| Name | Value |
+|---|---|
+| title_id | ID of the title which this chapter depend on. |
+| value | The chapter number. |
+
+## Usage
+
+An user can register in the options page inside MyMangaDex, sending a ``POST`` request to ``/user`` with at least the username and password, as the email and options are optional.  
+Updating informations is done by sending a ``POST`` request to ``/user/self`` with the fields updated as you wish, and both authentification methods in the header.  
+Informations about the user are obtained by sending a ``GET`` request to ``/user/self``, and you can delete all data (titles included) by sending a ``DELETE`` request to ``/user/self``.  
+
+When opening a title page or when reading a chapter, a request could be sent, to update the last open and the optional generated chapters list. The update is done by sending a ``POST`` request to ``/user/self/title/{mangaDexId}`` and a row is created if it does not already exist.  
+
+When Syncing, a ``GET`` request is sent to ``/user/self/title``, and the local storage is updated to reflect the online save.  
+On the opposite, when saving online, a ``POST`` request is sent to ``/user/self/title`` and all titles are updated with the received data.
+
+If options are saved online, a ``POST`` request is sent to ``/user/self/options`` with the updated options when saving them, and a ``GET`` request is sent when you import your online options.
+
+## Test server
+
+If you which to test it locally, you can run this command to have a temporary server ready at [localhost:8000]:
+
+```bash
+php -S localhost:8000 -t public
+```
+
+You can then use ``localhost:8000`` as the API url in your MyMangaDex options.
+
+## Run tests
+
+Execute the ``phpunit`` binary in ``/vendor/bin/``:
+
+```bash
+vendor\bin\phpunit
+```
