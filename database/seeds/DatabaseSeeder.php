@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use App\User;
 use App\Title;
 use App\Chapter;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,9 +22,26 @@ class DatabaseSeeder extends Seeder
         Title::truncate();
         Chapter::truncate();
 
-        factory(User::class, 50)->create();
-        factory(Title::class, 250)->create();
-        factory(Chapter::class, 2000)->create();
+        factory(User::class, 10)->create()->each(function ($user) {
+            factory(Title::class, 10)->create([
+                'user_id' => $user->id,
+            ])->each(function ($title) {
+                $chapters = [];
+
+                // Create all chapters
+                $base = $title->last;
+                $max = $base + 100;
+                for (; $base < $max; $base++) {
+                    $chapters[] = [
+                        'title_id' => $title->id,
+                        'value' => $base
+                    ];
+                }
+
+                // save all at once
+                Chapter::insert($chapters);
+            });
+        });
 
         // Enable it back
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');

@@ -56,7 +56,7 @@ The second one, ``Credentials Auth``, is two headers ``X-Auth-Name`` and ``X-Aut
 | /user/self | ``GET`` | Token | Get informations about the user. |
 | /user/self | ``POST`` | Token & Credentials | Update the user. |
 | /user/self | ``DELETE`` | Token & Credentials | Delete the User and every titles. |
-| /user/self/token/refresh | ``POST`` | Credentials | Generate a new token for the user. |
+| /user/self/token/refresh | ``GET`` | Credentials | Generate a new token for the user. |
 | /user/self/options | ``GET`` | Token | Get the list of options. |
 | /user/self/options | ``POST`` | Token | Update the list of options. |
 | /user/self/title | ``GET`` | Token | List of all titles of the user. |
@@ -117,7 +117,7 @@ If options are saved online, a ``POST`` request is sent to ``/user/self/options`
 If you which to test it locally, you can run this command to have a temporary server ready at [localhost:8000](localhost:8000):
 
 ```bash
-php -S localhost:8000 -t public
+php -S localhost:8000 -t .
 ```
 
 You can then use ``localhost:8000`` as the API url in your MyMangaDex options.
