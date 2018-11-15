@@ -19,6 +19,12 @@
 });*/
 
 /**
+ * /install
+ * Remove this line after installation
+ */
+//$router->get('/install', ['uses' => 'InstallController@install']);
+
+/**
  * /user
  */
 $router->group(['prefix' => 'user'], function ($router) {

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Laravel\Lumen\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use App\Exceptions\BadCredentialsException;
 
 class Handler extends ExceptionHandler
@@ -53,6 +54,13 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'status' => 'Not found.'
             ], 404);
+        }
+
+        // Return a JSON 405 error
+        if ($exception instanceof MethodNotAllowedHttpException) {
+            return response()->json([
+                'status' => 'Method not allowed.'
+            ], 405);
         }
 
         return parent::render($request, $exception);

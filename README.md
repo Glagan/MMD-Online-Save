@@ -1,6 +1,6 @@
 # MyMangaDex - Online Save
 
-Store MyMangaDex online saves to be able to sync between devices or browsers.
+Store MyMangaDex saves to be able to sync between devices or browsers.
 
 ## Requirements
 
@@ -29,6 +29,18 @@ php artisan db:create
 ```
 
 You're ready to go ! You can update the API url in the MyMangaDex options to use the one you just hosted.
+
+## Without console
+
+If you don't have a console, download the dependencies locally and upload the ``/vendor`` folder.
+
+To create the database schema:
+
+* Set a value for ``INSTALL_TOKEN`` in the ``.env`` file
+* Uncomment the ``/install`` route in ``routes/web.php``
+* Uncomment ``$app->register(App\Providers\AppServiceProvider::class);`` line in ``boostrap/app.php``
+* Send a request to ``GET /install`` with a ``X-Auth-Token`` with the value previously set for ``INSTALL_TOKEN``
+* After the migration is done you can comment or delete the line you modified, and even delete the ``app/Http/Controllers/InstallController.php`` file
 
 ## Authentification
 
@@ -102,7 +114,7 @@ If options are saved online, a ``POST`` request is sent to ``/user/self/options`
 
 ## Test server
 
-If you which to test it locally, you can run this command to have a temporary server ready at [localhost:8000]:
+If you which to test it locally, you can run this command to have a temporary server ready at [localhost:8000](localhost:8000):
 
 ```bash
 php -S localhost:8000 -t public
@@ -114,6 +126,6 @@ You can then use ``localhost:8000`` as the API url in your MyMangaDex options.
 
 Execute the ``phpunit`` binary in ``/vendor/bin/``:
 
-```bash
+```cmd
 vendor\bin\phpunit
 ```
