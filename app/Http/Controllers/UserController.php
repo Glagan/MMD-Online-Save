@@ -23,6 +23,8 @@ class UserController extends Controller
                 'register',
                 'token',
                 'refreshToken',
+                'update',
+                'delete',
             ]
         ]);
         $this->middleware('credentials_auth', [

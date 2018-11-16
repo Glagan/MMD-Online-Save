@@ -18,10 +18,14 @@ class TitleController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('token_auth');
+        $this->middleware('token_auth', [
+            'except' => [
+                'updateAll'
+            ]
+        ]);
         $this->middleware('credentials_auth', [
             'only' => [
-                'updateAll',
+                'updateAll'
             ]
         ]);
     }

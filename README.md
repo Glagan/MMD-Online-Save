@@ -44,7 +44,7 @@ To create the database schema:
 
 ## Authentification
 
-There is two authentification methods that can be combined.  
+There is two authentification methods.  
 The first one, ``Token Auth``, is a single header ``X-Auth-Token`` that contain the token of the user that will be used.  
 The second one, ``Credentials Auth``, is two headers ``X-Auth-Name`` and ``X-Auth-Pass`` that contain the username and password of the user.
 
@@ -54,13 +54,13 @@ The second one, ``Credentials Auth``, is two headers ``X-Auth-Name`` and ``X-Aut
 |---|---|---|---|
 | /user | ``POST`` | None | Register an User. |
 | /user/self | ``GET`` | Token | Get informations about the user. |
-| /user/self | ``POST`` | Token & Credentials | Update the user. |
-| /user/self | ``DELETE`` | Token & Credentials | Delete the User and every titles. |
+| /user/self | ``POST`` | Credentials | Update the user. |
+| /user/self | ``DELETE`` | Credentials | Delete the User and every titles. |
 | /user/self/token/refresh | ``GET`` | Credentials | Generate a new token for the user. |
 | /user/self/options | ``GET`` | Token | Get the list of options. |
 | /user/self/options | ``POST`` | Token | Update the list of options. |
 | /user/self/title | ``GET`` | Token | List of all titles of the user. |
-| /user/self/title | ``POST`` | Token & Credentials | Update all titles of the user. |
+| /user/self/title | ``POST`` | Credentials | Update all titles of the user. |
 | /user/self/title/{mangaDexId} | ``GET`` | Token | Get all informations about a specific title of the user. |
 | /user/self/title/{mangaDexId} | ``POST`` | Token | Update last opened chapter of the title {mangaDexId} to the content of the passed object.<br>Also look at the ``options.saveAllOpened`` and ``options.maxChapterSaved`` options to add the chapter to the chapters list and pop old ones if needed. |
 
