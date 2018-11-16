@@ -9,6 +9,12 @@ class RegisterTest extends TestCase
      */
     public function testRegister()
     {
+        // Delete 'user2' if it already exist
+        $user = User::where('username', 'user2')->first();
+        if ($user) {
+            $user->delete();
+        }
+
         $this->post('/user', [
             'username' => 'user2',
             'email' => 'unique.special.email@example.org',

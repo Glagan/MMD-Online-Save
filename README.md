@@ -102,7 +102,7 @@ The minimal data is used to make each accounts unique, safe, and to allow option
 ## Usage
 
 An user can register in the options page inside MyMangaDex, sending a ``POST`` request to ``/user`` with at least the username and password, as the email and options are optional.  
-Updating informations is done by sending a ``POST`` request to ``/user/self`` with the fields updated as you wish, and both authentification methods in the header.  
+Updating informations is done by sending a ``POST`` request to ``/user/self`` with the fields updated as you wish.  
 Informations about the user are obtained by sending a ``GET`` request to ``/user/self``, and you can delete all data (titles included) by sending a ``DELETE`` request to ``/user/self``.  
 
 When opening a title page or when reading a chapter, a request could be sent, to update the last open and the optional generated chapters list. The update is done by sending a ``POST`` request to ``/user/self/title/{mangaDexId}`` and a row is created if it does not already exist.  
@@ -125,6 +125,8 @@ You can then use ``localhost:8000`` as the API url in your MyMangaDex options.
 ## Run tests
 
 Execute the ``phpunit`` binary in ``/vendor/bin/``:
+
+> This will modify the database, don't execute test with real data already in the database
 
 ```cmd
 vendor\bin\phpunit

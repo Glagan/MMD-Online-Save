@@ -11,8 +11,11 @@ class TitleTest extends TestCase
     {
         $this->get('/user/self/title', [
             'X-Auth-Token' => $this->user->token
-        ])
-        ->seeStatusCode(200);
+        ]);
+        $this->seeStatusCode(200)
+        ->seeJsonStructure([
+            'titles'
+        ]);
     }
 
     /**
@@ -46,12 +49,9 @@ class TitleTest extends TestCase
             'X-Auth-Token' => $this->user->token
         ])
         ->seeStatusCode(200)
-        ->seeJsonStructure([
-            'updated',
-            'added'
-        ])
         ->seeJson([
-            'status' => 'Titles list updated.'
+            'status' => 'Titles list updated.',
+            'inserted' => 50
         ]);
     }
 

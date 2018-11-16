@@ -32,7 +32,7 @@ class TitleController extends Controller
 
     public function showSingle(Request $request, $mangaDexId)
     {
-        $title = Auth::user()->titles()->where('md_id', '=', $mangaDexId)->first();
+        $title = Auth::user()->titles()->where('md_id', $mangaDexId)->first();
         if ($title == null) {
             return response()->json([
                 'status' => 'No saved title for this id.'
@@ -141,7 +141,9 @@ class TitleController extends Controller
             $title->chapters = $title->sortedChapters('DESC')->pluck('value');
         }
 
-        return $titles;
+        return response()->json([
+            'titles' => $titles
+        ], 200);
     }
 
     public function updateAll(Request $request)
@@ -152,40 +154,28 @@ class TitleController extends Controller
             'maxChapterSaved' => min($request->input('options.maxChapterSaved', 100), 200),
         ];
 
-        $current = [0, 0];
-        foreach ($request->input('titles', []) as $key => $value) {
-            $title = Title::firstOrNew([
-                'user_id' => Auth::user()->id,
-                'md_id' => $key,
-            ]);
+        // Delete all old titles
+        Title::where('user_id', Auth::user()->id)->delete();
 
-            // Update Informations - Same as for a single entry
-            $created = ($title->id == null);
-            $current[$created]++;
-            if ($created) {
-                $title->user_id = Auth::user()->id;
-                $title->md_id = $key;
-                $title->mal_id = $request->input('mal', 0);
-                $title->last = $request->input('last', 0);
-            } else {
-            // Only update if needed when there is already a title
-                if ($title->mal_id == 0 && array_key_exists('mal', $value) && $value['mal'] > 0) {
-                    $title->mal_id = $value['mal'];
-                }
-                if (array_key_exists('last', $value) && $title->last < $value['last']) {
-                    $title->last = $value['last'];
-                }
-            }
+        // Insert new ones
+        $total = 0;
+        foreach ($request->input('titles', []) as $key => $value) {
+            $total++;
+
+            // Make a new title
+            $title = Title::make([
+                'md_id' => $key,
+                'mal_id' => $request->input('mal', 0),
+                'last' => $request->input('last', 0),
+            ]);
+            $title->user_id = Auth::user()->id;
             // Done App\Title
             $title->save();
 
             // Update chapters list
-            if ($options['saveAllOpened'] && ($title->last > 0 || (array_key_exists('chapters', $value) && count($value['chapters']) > 0))) {
-                if ($value['chapters']) {
-                    if (!$created) {
-                        $title->chapters()->delete();
-                    }
-
+            $hasChapters = (array_key_exists('chapters', $value) && count($value['chapters']) > 0);
+            if ($options['saveAllOpened']) {
+                if ($hasChapters) {
                     // Construct all chapters to insert them all at once
                     $allChapters = array_map(function($element) use ($title) {
                         return [
@@ -194,30 +184,16 @@ class TitleController extends Controller
                         ];
                     }, $value['chapters']);
                     Chapter::insert($allChapters);
-                } else {
-                    if ($created) {
-                        $start = max($title->last - $options['maxChapterSaved'], 0);
-                        $title->addChapterRange($start, $title->last);
-                    } else if (!$title->hasChapter($title->last)) {
-                        $title->insertChapter($title->last);
-                    }
-                }
-            }
-
-            // Delete chapters that are over limit
-            if (!$created) {
-                if (($count = $title->chapters()->count()) > $options['maxChapterSaved']) {
-                    $offset = $count - $options['maxChapterSaved'];
-                    // Delete the last X chapters
-                    $title->sortedChapters('ASC')->limit($offset)->delete();
+                } else if ($title->last > 0) {
+                    $start = max($title->last - $options['maxChapterSaved'], 0);
+                    $title->addChapterRange($start, $title->last);
                 }
             }
         }
 
         return response()->json([
             'status' => 'Titles list updated.',
-            'updated' => $current[0],
-            'added' => $current[1],
+            'inserted' => $total,
         ], 200);
     }
 
