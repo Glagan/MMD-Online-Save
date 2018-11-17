@@ -30,6 +30,22 @@ class RegisterTest extends TestCase
     }
 
     /**
+     * Test if the GET /user route works
+     */
+    public function testLogin()
+    {
+        $this->get('/user', [
+            'X-Auth-Name' => $this->username,
+            'X-Auth-Pass' => $this->password,
+        ])
+        ->seeStatusCode(200)
+        ->seeJson([
+            'status' => 'Correct credentials.',
+            'token' => $this->user->token
+        ]);
+    }
+
+    /**
      * Test if token refresh works
      */
     public function testGetTokenRefresh()

@@ -21,6 +21,7 @@ class UserController extends Controller
         $this->middleware('token_auth', [
             'except' => [
                 'register',
+                'login',
                 'token',
                 'refreshToken',
                 'update',
@@ -66,6 +67,13 @@ class UserController extends Controller
             'status' => 'Account created.',
             'token' => $user->token
         ], 201);
+    }
+
+    public function login(Request $request) {
+        return response()->json([
+            'status' => 'Correct credentials.',
+            'token' => Auth::user()->token,
+        ], 200);
     }
 
     /**

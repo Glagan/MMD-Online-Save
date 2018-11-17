@@ -29,7 +29,7 @@
  */
 $router->group(['prefix' => 'user'], function ($router) {
     $router->post('/', ['uses' => 'UserController@register']);
-    //$router->get('self/token', ['uses' => 'UserController@token']);
+    $router->get('/', ['uses' => 'UserController@login']);
 });
 
 /**
