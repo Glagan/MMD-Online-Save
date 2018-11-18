@@ -25,7 +25,7 @@ class UserController extends Controller
                 'token',
                 'refreshToken',
                 'update',
-                'delete',
+                'delete'
             ]
         ]);
         $this->middleware('credentials_auth', [
@@ -33,7 +33,7 @@ class UserController extends Controller
                 'register',
                 'show',
                 'showOptions',
-                'updateOptions',
+                'updateOptions'
             ]
         ]);
     }
