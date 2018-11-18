@@ -100,8 +100,7 @@ class RegisterTest extends TestCase
             'options' => '{version:2.0}'
         ], [
             'X-Auth-Name' => $this->username,
-            'X-Auth-Pass' => $this->password,
-            'X-Auth-Token' => $this->user->token,
+            'X-Auth-Pass' => $this->password
         ])
         ->seeStatusCode(200)
         ->seeJson([
@@ -119,8 +118,7 @@ class RegisterTest extends TestCase
     {
         $this->delete('/user/self', [], [
             'X-Auth-Name' => $this->username,
-            'X-Auth-Pass' => $this->password,
-            'X-Auth-Token' => $this->user->token,
+            'X-Auth-Pass' => $this->password
         ])
         ->seeStatusCode(200)
         ->seeJson([
@@ -158,6 +156,21 @@ class RegisterTest extends TestCase
         ->seeStatusCode(200)
         ->seeJson([
             'status' => 'Options saved.'
+        ]);
+    }
+
+    /**
+     * Test if updating an user options works
+     */
+    public function testShowToken()
+    {
+        $this->get('/user/self/token', [
+            'X-Auth-Name' => $this->username,
+            'X-Auth-Pass' => $this->password
+        ])
+        ->seeStatusCode(200)
+        ->seeJson([
+            'token' => $this->user->token
         ]);
     }
 }

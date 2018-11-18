@@ -56,6 +56,7 @@ The second one, ``Credentials Auth``, is two headers ``X-Auth-Name`` and ``X-Aut
 | /user/self | ``GET`` | Token | Get informations about the user. |
 | /user/self | ``POST`` | Credentials | Update the user. |
 | /user/self | ``DELETE`` | Credentials | Delete the User and every titles. |
+| /user/self/token | ``GET`` | Credentials | Return the token of the user. |
 | /user/self/token/refresh | ``GET`` | Credentials | Generate a new token for the user. |
 | /user/self/options | ``GET`` | Token | Get the list of options. |
 | /user/self/options | ``POST`` | Token | Update the list of options. |

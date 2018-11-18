@@ -23,6 +23,7 @@ class UserController extends Controller
                 'register',
                 'login',
                 'token',
+                'showToken',
                 'refreshToken',
                 'update',
                 'delete'
@@ -79,13 +80,13 @@ class UserController extends Controller
     /**
      * Return the token of an App\User
      */
-    /*public function token()
+    public function showToken()
     {
         // Return token
         return response()->json([
             'token' => Auth::user()->token,
         ], 200);
-    }*/
+    }
 
     /**
      * Generate a new token for an App\User
@@ -125,6 +126,7 @@ class UserController extends Controller
         }
         Auth::user()->email = $request->input('email', Auth::user()->email);
         Auth::user()->options = $request->input('options', Auth::user()->options);
+        Auth::user()->generateToken();
 
         // Save
         Auth::user()->save();

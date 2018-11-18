@@ -36,6 +36,7 @@ $router->group(['prefix' => 'user'], function ($router) {
  * /user/self
  */
 $router->group(['prefix' => 'user/self'], function ($router) {
+    $router->get('token', ['uses' => 'UserController@showToken']);
     $router->get('token/refresh', ['uses' => 'UserController@refreshToken']);
 
     $router->get('/', ['uses' => 'UserController@show']);
