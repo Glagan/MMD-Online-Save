@@ -21,7 +21,7 @@ class CreateTitlesTable extends Migration
                 ->onDelete('cascade');
             $table->unsignedInteger('mal_id');
             $table->unsignedInteger('md_id');
-            $table->string('last');
+            $table->float('last');
         });
     }
 

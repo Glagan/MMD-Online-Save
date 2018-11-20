@@ -27,6 +27,15 @@ class Title extends Model
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'last' => 'float'
+    ];
+
+    /**
      * Define an inverse one-to-many relationship with App\User.
      */
     public function user()

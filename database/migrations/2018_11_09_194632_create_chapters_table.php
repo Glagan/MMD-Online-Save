@@ -19,7 +19,7 @@ class CreateChaptersTable extends Migration
             $table->foreign('title_id')
                 ->references('id')->on('titles')
                 ->onDelete('cascade');
-            $table->string('value');
+            $table->float('value');
             $table->unique(['title_id', 'value']);
         });
     }

@@ -27,6 +27,15 @@ class Chapter extends Model
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'value' => 'float'
+    ];
+
+    /**
      * Define an inverse one-to-many relationship with App\Title.
      */
     public function title()

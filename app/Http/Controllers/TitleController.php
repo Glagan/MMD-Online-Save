@@ -156,16 +156,16 @@ class TitleController extends Controller
             // Make a new title
             $title = Title::make([
                 'md_id' => $key,
-                'mal_id' => $request->input('mal', 0),
-                'last' => $request->input('last', 0),
+                'mal_id' => $request->input('titles.' . $key . '.mal', 0),
+                'last' => $request->input('titles.' . $key . '.last', 0),
             ]);
             $title->user_id = Auth::user()->id;
             // Done App\Title
             $title->save();
 
             // Update chapters list
-            $hasChapters = (array_key_exists('chapters', $value) && count($value['chapters']) > 0);
             if ($options['saveAllOpened']) {
+                $hasChapters = (array_key_exists('chapters', $value) && count($value['chapters']) > 0);
                 if ($hasChapters) {
                     // Construct all chapters to insert them all at once
                     $allChapters = array_map(function($element) use ($title) {
