@@ -43,8 +43,8 @@ $router->group(['prefix' => 'user/self'], function ($router) {
     $router->post('/', ['uses' => 'UserController@update']);
     $router->delete('/', ['uses' => 'UserController@delete']);
 
-    $router->get('options', ['uses' => 'UserController@showOptions']);
-    $router->post('options', ['uses' => 'UserController@updateOptions']);
+    //$router->get('options', ['uses' => 'UserController@showOptions']);
+    //$router->post('options', ['uses' => 'UserController@updateOptions']);
 });
 
 /**

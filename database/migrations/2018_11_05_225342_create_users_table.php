@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->nullable()->unique();
             $table->string('password');
             $table->string('token', 50)->unique();
-            $table->text('options')->nullable();
+            //$table->text('options')->nullable();
             $table->dateTime('last_sync')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->dateTime('creation_date');
             $table->dateTime('last_update');

@@ -20,7 +20,7 @@ $factory->define(App\User::class, function (Generator $faker) {
         'username' => $faker->unique()->word,
         'email' => $faker->unique()->safeEmail,
         'password' => $hasher->make('secretsecret'),
-        'options' => '{}',
+        //'options' => '{}',
         'token' => bin2hex(random_bytes(25)),
     ];
 });

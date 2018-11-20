@@ -76,7 +76,7 @@ class RegisterTest extends TestCase
             'username',
             'email',
             'token',
-            'options',
+            //'options',
             'last_sync',
             'creation_date',
             'last_update',
@@ -97,7 +97,7 @@ class RegisterTest extends TestCase
         $this->post('/user/self', [
             'password' => 'newlengthof13',
             'email' => 'new.email@provider.com',
-            'options' => '{version:2.0}'
+            //'options' => '{version:2.0}'
         ], [
             'X-Auth-Name' => $this->username,
             'X-Auth-Pass' => $this->password
@@ -132,7 +132,7 @@ class RegisterTest extends TestCase
     /**
      * Test if getting an user options works
      */
-    public function testGetUserOptions()
+    /*public function testGetUserOptions()
     {
         $this->get('/user/self/options', [
             'X-Auth-Token' => $this->user->token,
@@ -141,12 +141,12 @@ class RegisterTest extends TestCase
         ->seeJson([
             'options' => $this->user->options
         ]);
-    }
+    }*/
 
     /**
      * Test if updating an user options works
      */
-    public function testPostUserOptions()
+    /*public function testPostUserOptions()
     {
         $this->post('/user/self/options', [
             'options' => '{version:2.0}'
@@ -157,7 +157,7 @@ class RegisterTest extends TestCase
         ->seeJson([
             'status' => 'Options saved.'
         ]);
-    }
+    }*/
 
     /**
      * Test if updating an user options works

@@ -18,16 +18,7 @@ class TitleController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('token_auth', [
-            'except' => [
-                'updateAll'
-            ]
-        ]);
-        $this->middleware('credentials_auth', [
-            'only' => [
-                'updateAll'
-            ]
-        ]);
+        $this->middleware('token_auth');
     }
 
     public function showSingle(Request $request, $mangaDexId)

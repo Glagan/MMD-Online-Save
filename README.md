@@ -58,10 +58,8 @@ The second one, ``Credentials Auth``, is two headers ``X-Auth-Name`` and ``X-Aut
 | /user/self | ``DELETE`` | Credentials | Delete the User and every titles. |
 | /user/self/token | ``GET`` | Credentials | Return the token of the user. |
 | /user/self/token/refresh | ``GET`` | Credentials | Generate a new token for the user. |
-| /user/self/options | ``GET`` | Token | Get the list of options. |
-| /user/self/options | ``POST`` | Token | Update the list of options. |
 | /user/self/title | ``GET`` | Token | List of all titles of the user. |
-| /user/self/title | ``POST`` | Credentials | Update all titles of the user. |
+| /user/self/title | ``POST`` | Token | Update all titles of the user. |
 | /user/self/title/{mangaDexId} | ``GET`` | Token | Get all informations about a specific title of the user. |
 | /user/self/title/{mangaDexId} | ``POST`` | Token | Update last opened chapter of the title {mangaDexId} to the content of the passed object.<br>Also look at the ``options.saveAllOpened`` and ``options.maxChapterSaved`` options to add the chapter to the chapters list and pop old ones if needed. |
 

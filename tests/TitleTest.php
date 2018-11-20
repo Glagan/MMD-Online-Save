@@ -44,8 +44,6 @@ class TitleTest extends TestCase
         $this->post('/user/self/title', [
             'titles' => $titles
         ], [
-            'X-Auth-Name' => $this->username,
-            'X-Auth-Pass' => $this->password,
             'X-Auth-Token' => $this->user->token
         ])
         ->seeStatusCode(200)

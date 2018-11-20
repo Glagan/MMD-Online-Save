@@ -33,8 +33,8 @@ class UserController extends Controller
             'except' => [
                 'register',
                 'show',
-                'showOptions',
-                'updateOptions'
+                //'showOptions',
+                //'updateOptions'
             ]
         ]);
     }
@@ -60,7 +60,7 @@ class UserController extends Controller
         $user->generateToken();
         // Optional fields
         $user->email = $request->input('email', null);
-        $user->options = $request->input('options', '{}');
+        //$user->options = $request->input('options', '{}');
         // Save in DB
         $user->save();
 
@@ -125,7 +125,7 @@ class UserController extends Controller
             Auth::user()->password = Hash::make($request->input('password'));
         }
         Auth::user()->email = $request->input('email', Auth::user()->email);
-        Auth::user()->options = $request->input('options', Auth::user()->options);
+        //Auth::user()->options = $request->input('options', Auth::user()->options);
         Auth::user()->generateToken();
 
         // Save
@@ -157,14 +157,14 @@ class UserController extends Controller
         return response()->json(Auth::user(), 200);
     }
 
-    public function showOptions()
+    /*public function showOptions()
     {
         return response()->json([
             'options' => Auth::user()->options
         ], 200);
-    }
+    }*/
 
-    public function updateOptions(Request $request)
+    /*public function updateOptions(Request $request)
     {
         Auth::user()->options = $request->input('options', '{}');
         Auth::user()->save();
@@ -172,5 +172,5 @@ class UserController extends Controller
         return response()->json([
             'status' => 'Options saved.'
         ], 200);
-    }
+    }*/
 }
