@@ -7,6 +7,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
 
 class Cors
 {
@@ -23,12 +24,8 @@ class Cors
 
     /**
      * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
         if (!$this->isCorsRequest($request)) {
             return $next($request);
@@ -57,8 +54,6 @@ class Cors
     /**
      * Incoming request is a CORS request if the Origin
      * header is set and Origin !== Host
-     *
-     * @param  \Illuminate\Http\Request  $request
      */
     private function isCorsRequest($request)
     {
@@ -82,8 +77,6 @@ class Cors
      * pass multiple domains to the header. The appropriate
      * domain is set in the Access-Control-Allow-Origin header
      * only if it is present in the whitelist.
-     *
-     * @param  \Illuminate\Http\Request  $request
      */
     private function resolveAllowedOrigin($request)
     {
@@ -104,8 +97,6 @@ class Cors
     /**
      * Take the incoming client request headers
      * and return. Will be used to pass in Access-Control-Allow-Headers
-     *
-     * @param  \Illuminate\Http\Request  $request
      */
     private function resolveAllowedHeaders($request)
     {
