@@ -56,7 +56,8 @@ class Title extends Model
      */
     public function hasChapter($chapter)
     {
-        return (Chapter::where('title_id', '=', $this->id)->where('value', '=', $chapter)->first() != null);
+        $hasChapter = Chapter::where('title_id', '=', $this->id)->where('value', '=', $chapter)->first();
+        return ($hasChapter != null);
     }
 
     public function sortedChapters($order = 'ASC')
