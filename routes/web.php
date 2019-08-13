@@ -43,8 +43,15 @@ $router->group(['prefix' => 'user/self'], function ($router) {
     $router->post('/', ['uses' => 'UserController@update']);
     $router->delete('/', ['uses' => 'UserController@delete']);
 
-    //$router->get('options', ['uses' => 'UserController@showOptions']);
-    //$router->post('options', ['uses' => 'UserController@updateOptions']);
+    $router->get('options', ['uses' => 'UserController@showOptions']);
+    $router->post('options', ['uses' => 'UserController@updateOptions']);
+
+    $router->get('history', ['uses' => 'HistoryController@showAll']);
+    $router->post('history', ['uses' => 'HistoryController@updateAll']);
+    $router->delete('history', ['uses' => 'HistoryController@deleteAll']);
+
+    $router->get('import', ['uses' => 'UserController@importAll']); // TODO: Make
+    $router->get('export', ['uses' => 'UserController@exportAll']); // TODO: Make
 });
 
 /**
@@ -53,7 +60,7 @@ $router->group(['prefix' => 'user/self'], function ($router) {
 $router->group(['prefix' => 'user/self/title'], function ($router) {
     $router->get('/', ['uses' => 'TitleController@showAll']);
     $router->post('/', ['uses' => 'TitleController@updateAll']);
-    //$router->delete('/', ['uses' => 'TitleController@deleteAll']);
+    $router->delete('/', ['uses' => 'TitleController@deleteAll']);
 });
 
 /**
@@ -62,7 +69,7 @@ $router->group(['prefix' => 'user/self/title'], function ($router) {
 $router->group(['prefix' => 'user/self/title/{mangaDexId}'], function ($router) {
     $router->get('/', ['uses' => 'TitleController@showSingle']);
     $router->post('/', ['uses' => 'TitleController@updateSingle']);
-    //$router->delete('/', ['uses' => 'TitleController@deleteSingle']);
+    $router->delete('/', ['uses' => 'TitleController@deleteSingle']);
 
     //$router->get('chapters', ['uses' => 'TitleController@showChapters']);
 });

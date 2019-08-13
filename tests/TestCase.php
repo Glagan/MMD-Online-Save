@@ -17,32 +17,31 @@ abstract class TestCase extends Laravel\Lumen\Testing\TestCase
     /**
      * Add a user property "user" with a test App\User inside
      */
-    protected $username = 'user1';
+    protected $username = 'user';
     protected $password = 'lengthof10';
-    protected $email = 'unique@provider.com';
+    protected $hashedPassword;
+    protected $options = '{version:2.0}';
     protected $user;
 
     public function setUp()
     {
         parent::setUp();
-        $this->restoreTestUser();
-    }
-
-    public function restoreTestUser()
-    {
-        // Delete if already exist
-        $this->user = App\User::where('username', $this->username)->first();
-        if ($this->user) {
-            $this->user->delete();
-        }
-
-        // Save a new one
+        // Delete users
+        Schema::disableForeignKeyConstraints();
+        DB::table('users')->truncate();
+        DB::table('titles')->truncate();
+        DB::table('chapters')->truncate();
+        DB::table('history_entries')->truncate();
+        DB::table('history_titles')->truncate();
+        Schema::enableForeignKeyConstraints();
+        // Insert default user
+        $this->hashedPassword = Hash::make($this->password);
         $this->user = App\User::make([
-            'username' => $this->username,
-            'email' => $this->email
+            'username' => $this->username
         ]);
+        $this->user->password = $this->hashedPassword;
+        $this->user->options = $this->options;
         $this->user->generateToken();
-        $this->user->password = Hash::make($this->password);
         $this->user->save();
     }
 }

@@ -1,176 +1,267 @@
 <?php
 
-use App\User;
-
-class RegisterTest extends TestCase
+class UserTest extends TestCase
 {
-    /**
-     * Test if user registration works
-     */
-    public function testRegister()
-    {
-        // Delete 'user2' if it already exist
-        $user = User::where('username', 'user2')->first();
-        if ($user) {
-            $user->delete();
-        }
+    protected $newFields = [
+        'password' => 'newlengthof13',
+        'options' => '{version:2.0,updated:true}'
+    ];
 
-        $this->post('/user', [
-            'username' => 'user2',
-            'email' => 'unique.special.email@example.org',
-            'password' => 'secretsecret'
-        ])
-        ->seeStatusCode(201)
-        ->seeJsonStructure([
-            'token'
-        ])
-        ->seeJson([
-            'status' => 'Account created.'
-        ]);
-    }
+    protected $newOptions = [
+        'options' => '{version:2.1,status:false}'
+    ];
 
-    /**
-     * Test if the GET /user route works
-     */
-    public function testLogin()
-    {
-        $this->get('/user', [
-            'X-Auth-Name' => $this->username,
-            'X-Auth-Pass' => $this->password,
-        ])
-        ->seeStatusCode(200)
-        ->seeJson([
-            'status' => 'Correct credentials.',
-            'token' => $this->user->token
-        ]);
-    }
-
-    /**
-     * Test if token refresh works
-     */
-    public function testGetTokenRefresh()
-    {
-        $this->get('/user/self/token/refresh', [
-            'X-Auth-Name' => $this->username,
-            'X-Auth-Pass' => $this->password,
-        ])
-        ->seeStatusCode(200)
-        ->seeJsonStructure([
-            'token'
-        ])
-        ->seeJson([
-            'status' => 'Token updated.'
-        ]);
-    }
-
-    /**
-     * Test if getting an user informations works
-     */
     public function testGetUser()
     {
         $this->get('/user/self', [
             'X-Auth-Token' => $this->user->token,
         ])
-        ->seeStatusCode(200)
-        ->seeJsonStructure([
-            'username',
-            'email',
-            'token',
-            //'options',
-            'last_sync',
-            'creation_date',
-            'last_update',
-        ])
-        ->seeJson([
-            'username' => $this->username,
-            'email' => $this->email,
-            'token' => $this->user->token,
-            'options' => $this->user->options
-        ]);
+            ->seeStatusCode(200)
+            ->seeJsonStructure([
+                'username',
+                'token',
+                'options',
+                'last_sync',
+                'creation_date',
+                'last_update',
+            ])
+            ->seeJson([
+                'username' => $this->username,
+                'token' => $this->user->token,
+                'options' => $this->user->options
+            ]);
     }
 
-    /**
-     * Test if updating an user works
-     */
-    public function testPostUser()
+    public function testGetUserInvalidToken()
     {
+        $this->get('/user/self', [
+            'X-Auth-Token' => 'notatoken',
+        ])
+            ->seeStatusCode(401);
+    }
+
+    public function testGetUserEmptyToken()
+    {
+        $this->get('/user/self')
+            ->seeStatusCode(401);
+    }
+
+    public function testUpdateUser()
+    {
+        $newOptions = '{version:2.0}';
         $this->post('/user/self', [
             'password' => 'newlengthof13',
-            'email' => 'new.email@provider.com',
-            //'options' => '{version:2.0}'
+            'options' => $newOptions
         ], [
             'X-Auth-Name' => $this->username,
             'X-Auth-Pass' => $this->password
         ])
-        ->seeStatusCode(200)
-        ->seeJson([
-            'status' => 'User updated.'
-        ]);
-
-        // Restore back the test user
-        $this->restoreTestUser();
+            ->seeStatusCode(200)
+            ->seeJsonStructure([
+                'status',
+                'token',
+                'options'
+            ])
+            ->seeJson([
+                'status' => 'User updated.',
+                'options' => $newOptions
+            ]);
     }
 
-    /**
-     * Test if deleting an user works
-     */
+    public function testUpdateUserNoOptions()
+    {
+        $this->post('/user/self', [
+            'password' => 'newlengthof13'
+        ], [
+            'X-Auth-Name' => $this->username,
+            'X-Auth-Pass' => $this->password
+        ])
+            ->seeStatusCode(200)
+            ->seeJsonStructure([
+                'status',
+                'token',
+                'options'
+            ])
+            ->seeJson([
+                'status' => 'User updated.',
+                'options' => Auth::user()->options
+            ]);
+    }
+
+    public function testUpdateUserInvalidFields()
+    {
+        $this->post('/user/self', [
+            'password' => 'toosmall',
+        ], [
+            'X-Auth-Name' => $this->username,
+            'X-Auth-Pass' => $this->password
+        ])
+            ->seeStatusCode(422);
+    }
+
+    public function testUpdateUserInvalidAuthField()
+    {
+        $this->post('/user/self', $this->newFields, [
+            'X-Auth-Name' => $this->username
+        ])
+            ->seeStatusCode(400);
+    }
+
+    public function testUpdateUserInvalidAuthUsername()
+    {
+        $this->post('/user/self', $this->newFields, [
+            'X-Auth-Name' => 'invalidUser',
+            'X-Auth-Pass' => $this->password
+        ])
+            ->seeStatusCode(400);
+    }
+
+    public function testUpdateUserInvalidAuthPassword()
+    {
+        $this->post('/user/self', $this->newFields, [
+            'X-Auth-Name' => $this->username,
+            'X-Auth-Pass' => 'invalidpassword'
+        ])
+            ->seeStatusCode(400);
+    }
+
+    public function testUpdateUserNoAuth()
+    {
+        $this->post('/user/self', $this->newFields)
+            ->seeStatusCode(400);
+    }
+
     public function testDeleteUser()
     {
         $this->delete('/user/self', [], [
             'X-Auth-Name' => $this->username,
             'X-Auth-Pass' => $this->password
         ])
-        ->seeStatusCode(200)
-        ->seeJson([
-            'status' => 'User deleted.'
-        ]);
-
-        // Restore back the test user
-        $this->restoreTestUser();
+            ->seeStatusCode(200)
+            ->seeJson([
+                'status' => 'User deleted.'
+            ]);
     }
 
-    /**
-     * Test if getting an user options works
-     */
-    /*public function testGetUserOptions()
+    public function testDeleteUserInvalidAuthField()
+    {
+        $this->delete('/user/self', [], [
+            'X-Auth-Name' => $this->username
+        ])
+            ->seeStatusCode(400);
+    }
+
+    public function testDeleteUserInvalidAuthUsername()
+    {
+        $this->delete('/user/self', [], [
+            'X-Auth-Name' => 'invalidUser',
+            'X-Auth-Pass' => $this->password
+        ])
+            ->seeStatusCode(400);
+    }
+
+    public function testDeleteUserInvalidAuthPassword()
+    {
+        $this->delete('/user/self', [], [
+            'X-Auth-Name' => $this->username,
+            'X-Auth-Pass' => 'invalidpassword'
+        ])
+            ->seeStatusCode(400);
+    }
+
+    public function testDeleteUserNoAuth()
+    {
+        $this->delete('/user/self', [])
+            ->seeStatusCode(400);
+    }
+
+    public function testGetUserOptions()
     {
         $this->get('/user/self/options', [
             'X-Auth-Token' => $this->user->token,
         ])
-        ->seeStatusCode(200)
-        ->seeJson([
-            'options' => $this->user->options
-        ]);
-    }*/
+            ->seeStatusCode(200)
+            ->seeJson([
+                'options' => $this->user->options
+            ]);
+    }
 
-    /**
-     * Test if updating an user options works
-     */
-    /*public function testPostUserOptions()
+    public function testGetUserOptionsInvalidAuthField()
     {
+        $this->get('/user/self/options', [
+            'X-Auth-Name' => $this->username
+        ])
+            ->seeStatusCode(401);
+    }
+
+    public function testGetUserOptionsInvalidAuthUsername()
+    {
+        $this->get('/user/self/options', [
+            'X-Auth-Name' => 'invalidUser',
+            'X-Auth-Pass' => $this->password
+        ])
+            ->seeStatusCode(401);
+    }
+
+    public function testGetUserOptionsInvalidAuthPassword()
+    {
+        $this->get('/user/self/options', [
+            'X-Auth-Name' => $this->username,
+            'X-Auth-Pass' => 'invalidpassword'
+        ])
+            ->seeStatusCode(401);
+    }
+
+    public function testGetUserOptionsNoAuth()
+    {
+        $this->get('/user/self/options')
+            ->seeStatusCode(401);
+    }
+
+    public function testPostUserOptions()
+    {
+        $newOptions = '{version:2.0,color:\'red\'}';
         $this->post('/user/self/options', [
-            'options' => '{version:2.0}'
+            'options' => $newOptions
         ], [
             'X-Auth-Token' => $this->user->token,
         ])
-        ->seeStatusCode(200)
-        ->seeJson([
-            'status' => 'Options saved.'
-        ]);
-    }*/
+            ->seeStatusCode(200)
+            ->seeJson([
+                'status' => 'Options saved.',
+                'options' => $newOptions
+            ]);
+    }
 
-    /**
-     * Test if updating an user options works
-     */
-    public function testShowToken()
+    public function testPostUserOptionsInvalidAuthField()
     {
-        $this->get('/user/self/token', [
-            'X-Auth-Name' => $this->username,
+        $this->post('/user/self/options', $this->newOptions, [
+            'X-Auth-Name' => $this->username
+        ])
+            ->seeStatusCode(401);
+    }
+
+    public function testPostUserOptionsInvalidAuthUsername()
+    {
+        $this->post('/user/self/options', $this->newOptions, [
+            'X-Auth-Name' => 'invalidUser',
             'X-Auth-Pass' => $this->password
         ])
-        ->seeStatusCode(200)
-        ->seeJson([
-            'token' => $this->user->token
-        ]);
+            ->seeStatusCode(401);
+    }
+
+    public function testPostUserOptionsInvalidAuthPassword()
+    {
+        $this->post('/user/self/options', $this->newOptions, [
+            'X-Auth-Name' => $this->username,
+            'X-Auth-Pass' => 'invalidpassword'
+        ])
+            ->seeStatusCode(401);
+    }
+
+    public function testPostUserOptionsNoAuth()
+    {
+        $this->post('/user/self/options', $this->newOptions)
+            ->seeStatusCode(401);
     }
 }

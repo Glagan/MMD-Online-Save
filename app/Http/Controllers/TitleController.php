@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\User;
 use App\Title;
 use App\Chapter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\HistoryEntry;
+use App\HistoryTitle;
 
 class TitleController extends Controller
 {
@@ -36,6 +36,19 @@ class TitleController extends Controller
 
     public function updateSingle(Request $request, $mangaDexId)
     {
+        $this->validate($request, [
+            'options' => 'array',
+            'options.saveAllOpened' => 'boolean',
+            'options.maxChapterSaved' => 'integer',
+            'options.updateHistoryPage' => 'boolean',
+            'mal' => 'integer',
+            'last' => 'required|numeric',
+            'chapters' => 'array',
+            'chapters.*' => 'numeric',
+            'title_name' => 'required_if:options.updateHistoryPage,true',
+            'chapter_id' => 'required_if:options.updateHistoryPage,true|numeric'
+        ]);
+
         $title = Title::firstOrNew([
             'user_id' => Auth::user()->id,
             'md_id' => $mangaDexId,
@@ -43,7 +56,8 @@ class TitleController extends Controller
 
         $options = [
             'saveAllOpened' => $request->input('options.saveAllOpened', true),
-            'maxChapterSaved' => min($request->input('options.maxChapterSaved', 100), 200),
+            'maxChapterSaved' => \min($request->input('options.maxChapterSaved', 100), 100),
+            'updateHistoryPage' =>  $request->input('options.updateHistoryPage', false)
         ];
 
         // Update Informations
@@ -62,7 +76,6 @@ class TitleController extends Controller
                 $title->last = $request->input('last', 0);
             }
         }
-        // Done
         $title->save();
 
         // Update chapters list
@@ -73,7 +86,7 @@ class TitleController extends Controller
                 }
 
                 // Construct all chapters to insert them all at once
-                $allChapters = array_map(function($element) use ($title) {
+                $allChapters = \array_map(function($element) use ($title) {
                     return [
                         'title_id' => $title->id,
                         'value' => $element
@@ -82,7 +95,7 @@ class TitleController extends Controller
                 Chapter::insert($allChapters);
             } else {
                 if ($created) {
-                    $start = max($title->last - $options['maxChapterSaved'], 0);
+                    $start = \max($title->last - $options['maxChapterSaved'], 0);
                     $title->addChapterRange($start, $title->last);
                 } else if (!$title->hasChapter($title->last)) {
                     $title->insertChapter($title->last);
@@ -90,13 +103,57 @@ class TitleController extends Controller
             }
         }
 
-        // Delete chapters that are over limit and limit is not over 200
+        // Delete chapters over the limit
         if (!$created) {
             if (($count = $title->chapters()->count()) > $options['maxChapterSaved']) {
                 $offset = $count - $options['maxChapterSaved'];
                 // Delete the last X chapters
                 $title->sortedChapters('ASC')->limit($offset)->delete();
             }
+        }
+
+        // Save History
+        if ($options['updateHistoryPage']) {
+            // Entry in the list
+            $historyEntry = HistoryEntry::where([
+                [ 'user_id', Auth::user()->id ],
+                [ 'md_id', $mangaDexId ]
+            ])->first();
+            $create = true;
+            if ($historyEntry) {
+                $above = HistoryEntry::where([
+                    [ 'id', '>', $historyEntry->id ],
+                    [ 'user_id', Auth::user()->id ]
+                ])->count();
+                if ($above > 0) {
+                    $historyEntry->delete();
+                } else {
+                    $create = false;
+                }
+            }
+            if ($create) {
+                $historyEntry = HistoryEntry::make([
+                    'md_id' => $mangaDexId
+                ]);
+                $historyEntry->user_id = Auth::user()->id;
+                $historyEntry->save();
+            }
+
+            // Title
+            $historyTitle = HistoryTitle::where([
+                [ 'user_id', Auth::user()->id ],
+                [ 'md_id', $mangaDexId ]
+            ])->first();
+            if (!$historyTitle) {
+                $historyTitle = HistoryTitle::make([
+                    'name' => $request->input('title_name'),
+                    'md_id' => $mangaDexId
+                ]);
+                $historyTitle->user_id = Auth::user()->id;
+            }
+            $historyTitle->progress = $title->last;
+            $historyTitle->chapter_id = $request->input('chapter_id');
+            $historyTitle->save();
         }
 
         // Done
@@ -106,9 +163,10 @@ class TitleController extends Controller
         ], 200);
     }
 
-    /*public function deleteSingle(Request $request, $mangaDexId)
+    public function deleteSingle(Request $request, $mangaDexId)
     {
-        $title = Title::where('user_id', '=', Auth::user()->id)->where('md_id', '=', $mangaDexId);
+        $title = Title::where('user_id', '=', Auth::user()->id)
+            ->where('md_id', '=', $mangaDexId)->first();
 
         // Delete if exist
         if ($title) {
@@ -122,7 +180,7 @@ class TitleController extends Controller
         return response()->json([
             'status' => 'No title with the id #' . $mangaDexId
         ], 404);
-    }*/
+    }
 
     public function showAll(Request $request)
     {
@@ -139,10 +197,20 @@ class TitleController extends Controller
 
     public function updateAll(Request $request)
     {
+        $this->validate($request, [
+            'options' => 'array',
+            'options.saveAllOpened' => 'boolean',
+            'options.maxChapterSaved' => 'integer',
+            'titles' => 'array',
+            'titles.*' => 'array',
+            'titles.*.mal' => 'required|integer',
+            'titles.*.last' => 'required|numeric'
+        ]);
+
         // Options or default options
         $options = [
             'saveAllOpened' => $request->input('options.saveAllOpened', true),
-            'maxChapterSaved' => min($request->input('options.maxChapterSaved', 100), 200),
+            'maxChapterSaved' => min($request->input('options.maxChapterSaved', 100), 100),
         ];
 
         // Delete all old titles
@@ -156,8 +224,8 @@ class TitleController extends Controller
             // Make a new title
             $title = Title::make([
                 'md_id' => $key,
-                'mal_id' => $request->input('titles.' . $key . '.mal', 0),
-                'last' => $request->input('titles.' . $key . '.last', 0),
+                'mal_id' => $request->input('titles.' . $key . '.mal'),
+                'last' => $request->input('titles.' . $key . '.last'),
             ]);
             $title->user_id = Auth::user()->id;
             // Done App\Title
@@ -188,12 +256,12 @@ class TitleController extends Controller
         ], 200);
     }
 
-    /*public function deleteAll(Request $request)
+    public function deleteAll(Request $request)
     {
         $deleted = Title::where('user_id', '=', Auth::user()->id)->delete();
 
         return response()->json([
             'status' => 'Deleted ' . $deleted . ' titles.'
         ], 200);
-    }*/
+    }
 }

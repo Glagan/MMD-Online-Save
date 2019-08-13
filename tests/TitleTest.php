@@ -1,93 +1,140 @@
 <?php
 
-use App\User;
+use App\Title;
 
 class TitleTest extends TestCase
 {
-    /**
-     * Test if showing all titles works
-     */
-    public function testShowAll()
+    protected function getTitle()
     {
-        $this->get('/user/self/title', [
-            'X-Auth-Token' => $this->user->token
+        factory(App\Title::class)->create([
+            'user_id' => $this->user->id
         ]);
-        $this->seeStatusCode(200)
-        ->seeJsonStructure([
-            'titles'
-        ]);
+        return App\Title::where('user_id', $this->user->id)->firstOrFail();
     }
 
-    /**
-     * Test if updating all titles works
-     */
-    public function testUpdateAll()
+    protected function getTitles($amount)
     {
-        // Generate 50 random titles with or without chapters
+        // Generate x random titles with or without chapters
         // No Factory since these chapters come from MMD and don't follow the same names
         $titles = [];
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < $amount; $i++) {
             // Generate chapters, or not
             $chapters = [];
-            if (mt_rand(0, 100) < 50) {
-                $start = mt_rand(0, 800);
-                $chapters = range($start, $start+100);
+            if (\mt_rand(0, 100) < $amount) {
+                $start = \mt_rand(0, 800);
+                $chapters = \range($start, $start + 100);
             }
 
             $titles[$i * 100] = [
                 'mal' => $i * 1000,
-                'last' => mt_rand(0, 800),
+                'last' => \mt_rand(0, 800),
                 'chapters' => $chapters
             ];
         }
+        return $titles;
+    }
 
+    public function testShowAll()
+    {
+        $this->get('/user/self/title', [
+            'X-Auth-Token' => $this->user->token
+        ])
+            ->seeStatusCode(200)
+            ->seeJsonStructure([
+                'titles'
+            ]);
+    }
+
+    public function testShowAllInvalidToken()
+    {
+        $this->get('/user/self/title', [
+            'X-Auth-Token' => 'invalidToken'
+        ])
+            ->seeStatusCode(401);
+    }
+
+    public function testUpdateAll()
+    {
+        $titles = $this->getTitles(50);
         $this->post('/user/self/title', [
             'titles' => $titles
         ], [
             'X-Auth-Token' => $this->user->token
         ])
-        ->seeStatusCode(200)
-        ->seeJson([
-            'status' => 'Titles list updated.',
-            'inserted' => 50
-        ]);
+            ->seeStatusCode(200)
+            ->seeJson([
+                'status' => 'Titles list updated.',
+                'inserted' => 50
+            ])
+            ->seeInDatabase('titles', [
+                'user_id' => Auth::user()->id,
+                'mal_id' => \array_column($titles, 'mal')
+            ]);
     }
 
-    /**
-     * Test if showing one title works
-     */
+    public function testUpdateAllInvalidTitles()
+    {
+        $this->post('/user/self/title', [
+            'titles' => [
+                'mal' => 1,
+                'last' => 'az',
+                'chapters' => [1, 2, 3]
+            ]
+        ], [
+            'X-Auth-Token' => $this->user->token
+        ])
+            ->seeStatusCode(422);
+    }
+
+    public function testUpdateAllInvalidToken()
+    {
+        $this->post('/user/self/title', [
+            'titles' => $this->getTitles(50)
+        ], [
+            'X-Auth-Token' => 'invalidToken'
+        ])
+            ->seeStatusCode(401);
+    }
+
     public function testShowSingle()
     {
-        // Get a title
-        factory(App\Title::class)->create([
-            'user_id' => $this->user->id
-        ]);
-        $title = App\Title::where('user_id', $this->user->id)->firstOrFail();
-
-        //
+        $title = $this->getTitle();
         $this->get('/user/self/title/' . $title->md_id, [
             'X-Auth-Token' => $this->user->token
         ])
-        ->seeStatusCode(200)
-        ->seeJsonStructure([
-            'mal_id',
-            'md_id',
-            'last',
-            'chapters'
-        ]);
+            ->seeStatusCode(200)
+            ->seeJsonStructure([
+                'mal_id',
+                'md_id',
+                'last',
+                'chapters'
+            ]);
     }
 
-    /**
-     * Test if updating one title works
-     */
+    public function testShowSingleEmptyTitle()
+    {
+        $this->get('/user/self/title/999999', [
+            'X-Auth-Token' => $this->user->token
+        ])
+            ->seeJsonStructure([
+                'status'
+            ])
+            ->seeStatusCode(404);
+    }
+
+    public function testShowSingleInvalidToken()
+    {
+        $title = $this->getTitle();
+        $this->get('/user/self/title/' . $title->md_id, [
+            'X-Auth-Token' => 'invalidToken'
+        ])
+            ->seeStatusCode(401);
+    }
+
     public function testUpdateSingle()
     {
-        // We don't care if the title doesn't exist
-        $titleId = mt_rand(1, 5000);
-
-        //
-        $this->post('/user/self/title/' . $titleId, [
-            'mal_id' => 1337,
+        $this->post('/user/self/title/12', [
+            'mal' => 1337,
             'last' => 999,
             'options' => [
                 'saveAllOpened' => true,
@@ -96,12 +143,198 @@ class TitleTest extends TestCase
         ], [
             'X-Auth-Token' => $this->user->token
         ])
-        ->seeStatusCode(200)
-        ->seeJsonStructure([
-            'status'
+            ->seeStatusCode(200)
+            ->seeJsonStructure([
+                'status'
+            ])
+            ->seeJson([
+                'last' => 999
+            ])
+            ->seeInDatabase('titles', [
+                'user_id' => Auth::user()->id,
+                'mal_id' => 1337,
+                'md_id' => 12,
+                'last' => '999'
+            ]);
+    }
+
+    public function testUpdateSingleWithChapters()
+    {
+        $this->post('/user/self/title/12', [
+            'mal' => 1337,
+            'last' => 999,
+            'options' => [
+                'saveAllOpened' => true,
+                'maxChapterSaved' => 100
+            ],
+            'chapters' => [ 1, 2, 3 ]
+        ], [
+            'X-Auth-Token' => $this->user->token
         ])
-        ->seeJson([
-            'last' => 999
+            ->seeStatusCode(200)
+            ->seeJsonStructure([
+                'status'
+            ])
+            ->seeJson([
+                'last' => 999
+            ])
+            ->seeInDatabase('titles', [
+                'user_id' => Auth::user()->id,
+                'mal_id' => 1337,
+                'md_id' => 12,
+                'last' => '999'
+            ])
+            ->seeInDatabase('chapters', [
+                'title_id' => 1,
+                'value' => ['1', '2', '3']
+            ]);
+    }
+
+    public function testUpdateSingleInvalidField()
+    {
+        $this->post('/user/self/title/12', [
+            'mal' => 1337,
+            'last' => 'az',
+            'options' => [
+                'saveAllOpened' => true,
+                'maxChapterSaved' => 100
+            ]
+        ], [
+            'X-Auth-Token' => $this->user->token
+        ])
+            ->seeStatusCode(422);
+    }
+
+    public function testUpdateSingleInvalidAuth()
+    {
+        $this->post('/user/self/title/1245', [
+            'mal' => 1337,
+            'last' => 999,
+            'options' => [
+                'saveAllOpened' => true,
+                'maxChapterSaved' => 100
+            ]
+        ], [
+            'X-Auth-Token' => 'invalidToken'
+        ])
+            ->seeStatusCode(401);
+    }
+
+    public function testDeleteSingle()
+    {
+        // Create en save a title
+        $title = Title::make([
+            'md_id' => 12,
+            'mal_id' => 1,
+            'last' => 123
         ]);
+        $title->user_id = 1;
+        $title->save();
+        // Delete it
+        $this->delete('/user/self/title/12', [], [
+            'X-Auth-Token' => $this->user->token
+        ])
+            ->seeStatusCode(200)
+            ->seeJson([
+                'status' => 'Title #12 deleted.'
+            ]);
+    }
+
+    public function testDeleteSingleEmptyTitle()
+    {
+        $this->delete('/user/self/title/9999999', [], [
+            'X-Auth-Token' => $this->user->token
+        ])
+            ->seeStatusCode(404);
+    }
+
+    public function testDeleteSingleInvalidAuth()
+    {
+        $this->delete('/user/self/title/12', [], [
+            'X-Auth-Token' => 'invalidToken'
+        ])
+            ->seeStatusCode(401);
+    }
+
+    public function testDeleteAll()
+    {
+        // Create en save a title
+        $title = Title::make([
+            'md_id' => 12,
+            'mal_id' => 1,
+            'last' => 123
+        ]);
+        $title->user_id = 1;
+        $title->save();
+        // Delete all of them
+        $this->delete('/user/self/title', [], [
+            'X-Auth-Token' => $this->user->token
+        ])
+            ->seeStatusCode(200)
+            ->seeJson([
+                'status' => 'Deleted 1 titles.'
+            ]);
+    }
+
+    public function testDeleteAllInvalidAuth()
+    {
+        $this->delete('/user/self/title', [], [
+            'X-Auth-Token' => 'invalidToken'
+        ])
+            ->seeStatusCode(401);
+    }
+
+    public function testUpdateSingleHistory()
+    {
+        $this->post('/user/self/title/12', [
+            'mal' => 1337,
+            'last' => 999,
+            'options' => [
+                'saveAllOpened' => true,
+                'maxChapterSaved' => 100,
+                'updateHistoryPage' => true
+            ],
+            'title_name' => 'One Piece',
+            'chapter_id' => 16454
+        ], [
+            'X-Auth-Token' => $this->user->token
+        ])
+            ->seeStatusCode(200)
+            ->seeJsonStructure([
+                'status'
+            ])
+            ->seeJson([
+                'last' => 999
+            ])
+            ->seeInDatabase('titles', [
+                'user_id' => Auth::user()->id,
+                'mal_id' => 1337,
+                'md_id' => 12,
+                'last' => '999'
+            ])
+            ->seeInDatabase('history_titles', [
+                'user_id' => Auth::user()->id,
+                'name' => 'One Piece',
+                'md_id' => 12,
+                'progress' => '999',
+                'chapter_id' => 16454
+            ]);
+    }
+
+    public function testUpdateSingleHistoryInvalidField()
+    {
+        $this->post('/user/self/title/12', [
+            'mal' => 1337,
+            'last' => 999,
+            'options' => [
+                'saveAllOpened' => true,
+                'maxChapterSaved' => 100,
+                'updateHistoryPage' => true
+            ],
+            'title_name' => 'One Piece'
+        ], [
+            'X-Auth-Token' => $this->user->token
+        ])
+            ->seeStatusCode(422);
     }
 }

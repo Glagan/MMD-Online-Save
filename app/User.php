@@ -7,7 +7,6 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Support\Facades\Hash;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract
 {
@@ -22,7 +21,16 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'token', /*'options',*/ 'titles', 'last_sync', 'last_update', 'creation_date'
+        'username', 'email', 'token', 'options', 'titles', 'last_sync', 'last_update', 'creation_date'
+    ];
+
+    /**
+     * The attributes default values.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'options' => ''
     ];
 
     /**
@@ -51,6 +59,16 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function titles()
     {
         return $this->hasMany('App\Title');
+    }
+
+    public function historyEntries()
+    {
+        return $this->hasMany('App\HistoryEntry');
+    }
+
+    public function historyTitles()
+    {
+        return $this->hasMany('App\HistoryTitle');
     }
 
     public function generateToken()

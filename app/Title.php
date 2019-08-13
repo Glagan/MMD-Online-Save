@@ -88,37 +88,4 @@ class Title extends Model
 
         return $this;
     }
-
-    /**
-     * Insert a chapter at the correct place in the sorted array.
-     * @source https://stackoverflow.com/questions/9524501/what-are-better-ways-to-insert-element-in-sorted-array-in-php
-     */
-    /*public function insertChapter($chapter) {
-        // Unique
-        if (in_array($chapter, $this->chapters))
-            return;
-
-        // If empty just push and return
-        $stopIndex = count($this->chapters) - 1;
-        if ($stopIndex < 0) {
-            $this->chapters[] = $chapter;
-            return $this;
-        }
-
-        // Sorted insert
-        $startIndex = 0;
-        $middle = 0;
-        while ($startIndex < $stopIndex) {
-            $middle = ceil(($stopIndex + $startIndex) / 2);
-            if ($elem > $this->chapters[$middle]) {
-                $stopIndex = $middle - 1;
-            } else if ($elem <= $this->chapters[$middle]) {
-                $startIndex = $middle;
-            }
-        }
-        $offset = $elem >= $this->chapters[$startIndex] ? $startIndex : $startIndex + 1;
-        array_splice($this->chapters, $offset, 0, array($elem));
-
-        return $this;
-    }*/
 }

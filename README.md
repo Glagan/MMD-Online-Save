@@ -61,18 +61,22 @@ The second one, ``Credentials Auth``, is two headers ``X-Auth-Name`` and ``X-Aut
 | /user/self/title | ``GET`` | Token | List of all titles of the user. |
 | /user/self/title | ``POST`` | Token | Update all titles of the user. |
 | /user/self/title/{mangaDexId} | ``GET`` | Token | Get all informations about a specific title of the user. |
-| /user/self/title/{mangaDexId} | ``POST`` | Token | Update last opened chapter of the title {mangaDexId} to the content of the passed object.<br>Also look at the ``options.saveAllOpened`` and ``options.maxChapterSaved`` options to add the chapter to the chapters list and pop old ones if needed. |
+| /user/self/title/{mangaDexId} | ``POST`` | Token | Update last opened chapter of the title {mangaDexId} to the content of the passed object.<br>Also look at the ``options.saveAllOpened`` and ``options.maxChapterSaved`` options to add the chapter to the chapters list and delete old ones if needed. |
+| /user/self/options | ``GET`` | Token | Show the options saved online. |
+| /user/self/options | ``POST`` | Token | Update options saved online. |
+| /user/self/history | ``GET`` | Token | Show the list and all titles in the history of the user. |
+| /user/self/history | ``POST`` | Token | Delete all of the current history and update it with a new one. |
+| /user/self/history | ``DELETE`` | Token | Delete all of the current history of the user. |
 
 ## Data
 
 ### User
 
-The minimal data is used to make each accounts unique, safe, and to allow optional retrieval.
+The minimal data is used to make each accounts unique and safe.
 
 | Name | Value |
 |---|---|
 | username | The username you will use to login. |
-| email | Optionnal email to retrieve your password. |
 | password | The password of your account. |
 | token | Unique token used to authentificate. |
 | options | Your MyMangaDex options. |
@@ -97,6 +101,23 @@ The minimal data is used to make each accounts unique, safe, and to allow option
 |---|---|
 | title_id | ID of the title which this chapter depend on. |
 | value | The chapter number. |
+
+### HistoryEntry
+
+| Name | Value |
+|---|---|
+| user | The id of the [User](#User) the history entry belongs to. |
+| md_id | The MangaDex id. |
+
+### HistoryTitle
+
+| Name | Value |
+|---|---|
+| user | The id of the [User](#User) the history entry belongs to. |
+| name | The name of the title. |
+| md_id | The MangaDex id. |
+| progress   | The progress (last chapter opened) on MangaDex. |
+| chapter_id | The chapter id on MangaDex. |
 
 ## Usage
 
