@@ -12,9 +12,9 @@ You need the same requirements as [Lumen](https://lumen.laravel.com/):
 * PDO PHP Extension
 * Mbstring PHP Extension
 
-## How to use
+## Installation
 
-First, install all dependencies:
+Install all composer dependencies:
 
 ```bash
 composer update
@@ -30,7 +30,7 @@ php artisan db:create
 
 You're ready to go ! You can update the API url in the MyMangaDex options to use the one you just hosted.
 
-## Without console
+### Without console
 
 If you don't have a console, download the dependencies locally and upload the ``/vendor`` folder.
 
@@ -67,6 +67,8 @@ The second one, ``Credentials Auth``, is two headers ``X-Auth-Name`` and ``X-Aut
 | /user/self/history | ``GET`` | Token | Show the list and all titles in the history of the user. |
 | /user/self/history | ``POST`` | Token | Delete all of the current history and update it with a new one. |
 | /user/self/history | ``DELETE`` | Token | Delete all of the current history of the user. |
+| /user/self/export | ``GET`` | Token | Export all online user data, options, titles with chapters and history. |
+| /user/self/import | ``POST`` | Token | Replace all online user data. |
 
 ## Data
 
@@ -121,14 +123,14 @@ The minimal data is used to make each accounts unique and safe.
 
 ## Usage
 
-An user can register in the options page inside MyMangaDex, sending a ``POST`` request to ``/user`` with at least the username and password, as the email and options are optional.  
+An user can register in the options page inside MyMangaDex, sending a ``POST`` request to ``/user`` with at least the username and password, as options are optional.  
 Updating informations is done by sending a ``POST`` request to ``/user/self`` with the fields updated as you wish.  
 Informations about the user are obtained by sending a ``GET`` request to ``/user/self``, and you can delete all data (titles included) by sending a ``DELETE`` request to ``/user/self``.  
 
 When opening a title page or when reading a chapter, a request could be sent, to update the last open and the optional generated chapters list. The update is done by sending a ``POST`` request to ``/user/self/title/{mangaDexId}`` and a row is created if it does not already exist.  
 
-When Syncing, a ``GET`` request is sent to ``/user/self/title``, and the local storage is updated to reflect the online save.  
-On the opposite, when saving online, a ``POST`` request is sent to ``/user/self/title`` and all titles are updated with the received data.
+When Syncing, a ``GET`` request is sent to ``/user/self/export``, and the local storage is updated to reflect the online save.  
+On the opposite, when saving online, a ``POST`` request is sent to ``/user/self/import`` and all titles are updated with the received data.
 
 If options are saved online, a ``POST`` request is sent to ``/user/self/options`` with the updated options when saving them, and a ``GET`` request is sent when you import your online options.
 
@@ -142,12 +144,8 @@ php -S localhost:8000 -t .
 
 You can then use ``localhost:8000`` as the API url in your MyMangaDex options.
 
-## Run tests
+## Tests
 
-Execute the ``phpunit`` binary in ``/vendor/bin/``:
+There is more than 70 tests, you can run them by executing ``phpunit`` in the ``vendor/bin`` folder.
 
 > This will modify the database, don't execute test with real data already in the database
-
-```cmd
-vendor\bin\phpunit
-```
