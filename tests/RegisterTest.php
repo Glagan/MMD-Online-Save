@@ -4,7 +4,10 @@ class RegisterTest extends TestCase
 {
     public function testWorkingRegisterWithOptions()
     {
-        $options = '{version:2.1,key:value}';
+        $options = [
+            'version' => 2.1,
+            'key' => 'value'
+        ];
         $this->post('/user', [
             'username' => 'user2',
             'password' => $this->password,
@@ -15,12 +18,12 @@ class RegisterTest extends TestCase
                 'token'
             ])
             ->seeJson([
-                'status' => 'Account created.'
+                'status' => 'Account created'
             ])
             ->seeInDatabase('users', [
                 'id' => 2,
                 'username' => 'user2',
-                'options' => $options
+                'options' => \json_encode($options)
             ]);
     }
 
@@ -35,7 +38,7 @@ class RegisterTest extends TestCase
                 'token'
             ])
             ->seeJson([
-                'status' => 'Account created.'
+                'status' => 'Account created'
             ])
             ->seeInDatabase('users', [
                 'id' => 2,

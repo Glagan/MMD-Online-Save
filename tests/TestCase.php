@@ -20,7 +20,9 @@ abstract class TestCase extends Laravel\Lumen\Testing\TestCase
     protected $username = 'user';
     protected $password = 'lengthof10';
     protected $hashedPassword;
-    protected $options = '{version:2.0}';
+    protected $options = [
+        'version' => 2.0
+    ];
     protected $user;
 
     public function setUp()
@@ -40,7 +42,7 @@ abstract class TestCase extends Laravel\Lumen\Testing\TestCase
             'username' => $this->username
         ]);
         $this->user->password = $this->hashedPassword;
-        $this->user->options = $this->options;
+        $this->user->options = \json_encode($this->options);
         $this->user->generateToken();
         $this->user->save();
     }

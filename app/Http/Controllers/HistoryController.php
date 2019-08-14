@@ -67,7 +67,7 @@ class HistoryController extends Controller
             $historyTitle->save();
         }
         return response()->json([
-            'status' => 'History updated.',
+            'status' => 'History updated',
             'inserted' => $total
         ], 200);
     }
@@ -90,7 +90,7 @@ class HistoryController extends Controller
         HistoryTitle::where('user_id', Auth::user()->id)->delete();
 
         return response()->json([
-            'status' => 'History deleted.'
+            'status' => 'History deleted'
         ], 200);
     }
 }

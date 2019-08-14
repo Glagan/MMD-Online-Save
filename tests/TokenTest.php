@@ -68,7 +68,7 @@ class TokenTest extends TestCase
                 'token'
             ])
             ->seeJson([
-                'status' => 'Token updated.'
+                'status' => 'Token updated'
             ])
             ->seeInDatabase('users', [
                 'token' => Auth::user()->token

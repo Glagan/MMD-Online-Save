@@ -63,7 +63,7 @@ class TitleTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'Titles list updated.',
+                'status' => '50 title(s) inserted',
                 'inserted' => 50
             ])
             ->seeInDatabase('titles', [
@@ -205,6 +205,21 @@ class TitleTest extends TestCase
             ->seeStatusCode(422);
     }
 
+    public function testUpdateSingleInvalidOption()
+    {
+        $this->post('/user/self/title/12', [
+            'mal' => 1337,
+            'last' => 123,
+            'options' => [
+                'saveAllOpened' => 'not_false',
+                'maxChapterSaved' => 100
+            ]
+        ], [
+            'X-Auth-Token' => $this->user->token
+        ])
+            ->seeStatusCode(422);
+    }
+
     public function testUpdateSingleInvalidAuth()
     {
         $this->post('/user/self/title/1245', [
@@ -236,7 +251,7 @@ class TitleTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'Title #12 deleted.'
+                'status' => 'Title #12 deleted'
             ]);
     }
 
@@ -272,7 +287,7 @@ class TitleTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'Deleted 1 titles.'
+                'status' => 'Deleted 1 title(s)'
             ]);
     }
 

@@ -23,7 +23,7 @@ class HistoryTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'History updated.',
+                'status' => 'History updated',
                 'inserted' => 100
             ]);
     }
@@ -74,7 +74,7 @@ class HistoryTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'History updated.',
+                'status' => 'History updated',
                 'inserted' => 0
             ]);
     }
@@ -86,7 +86,7 @@ class HistoryTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'History updated.',
+                'status' => 'History updated',
                 'inserted' => 0
             ]);
     }
@@ -125,7 +125,7 @@ class HistoryTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'History deleted.'
+                'status' => 'History deleted'
             ]);
     }
 

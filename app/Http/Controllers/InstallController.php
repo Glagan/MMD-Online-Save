@@ -13,7 +13,7 @@ class InstallController extends Controller
         if (env('INSTALL_TOKEN', 'none') == 'none' ||
             $request->header('X-Auth-Token') != env('INSTALL_TOKEN')) {
             return response()->json([
-                'status' => 'Unauthorized.'
+                'status' => 'Unauthorized'
             ], 401);
         }
 

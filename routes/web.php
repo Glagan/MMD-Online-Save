@@ -50,8 +50,8 @@ $router->group(['prefix' => 'user/self'], function ($router) {
     $router->post('history', ['uses' => 'HistoryController@updateAll']);
     $router->delete('history', ['uses' => 'HistoryController@deleteAll']);
 
-    $router->get('import', ['uses' => 'UserController@importAll']); // TODO: Make
-    $router->get('export', ['uses' => 'UserController@exportAll']); // TODO: Make
+    $router->get('export', ['uses' => 'UserController@exportAll']);
+    $router->post('import', ['uses' => 'UserController@importAll']);
 });
 
 /**

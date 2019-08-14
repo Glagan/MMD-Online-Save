@@ -26,7 +26,7 @@ class TitleController extends Controller
         $title = Auth::user()->titles()->where('md_id', $mangaDexId)->first();
         if ($title == null) {
             return response()->json([
-                'status' => 'No saved title for this id.'
+                'status' => 'No saved title for this id'
             ], 404);
         }
 
@@ -34,6 +34,16 @@ class TitleController extends Controller
         return $title;
     }
 
+    /**
+     * {
+     *  options
+     *  mal
+     *  last
+     *  chapters { progress }
+     *  title_name
+     *  chapter_id
+     * }
+     */
     public function updateSingle(Request $request, $mangaDexId)
     {
         $this->validate($request, [
@@ -53,12 +63,7 @@ class TitleController extends Controller
             'user_id' => Auth::user()->id,
             'md_id' => $mangaDexId,
         ]);
-
-        $options = [
-            'saveAllOpened' => $request->input('options.saveAllOpened', true),
-            'maxChapterSaved' => \min($request->input('options.maxChapterSaved', 100), 100),
-            'updateHistoryPage' =>  $request->input('options.updateHistoryPage', false)
-        ];
+        $options = Auth::user()->getOptions($request);
 
         // Update Informations
         $created = ($title->id == null);
@@ -173,7 +178,7 @@ class TitleController extends Controller
             $title->delete();
 
             return response()->json([
-                'status' => 'Title #' . $mangaDexId . ' deleted.'
+                'status' => 'Title #' . $mangaDexId . ' deleted'
             ], 200);
         }
 
@@ -187,7 +192,7 @@ class TitleController extends Controller
         $titles = Auth::user()->titles;
         // Add chapters
         foreach ($titles as $title) {
-            $title->chapters = $title->sortedChapters('DESC')->pluck('value');
+            $title->chapters = $title->sortedChapters('ASC')->pluck('value');
         }
 
         return response()->json([
@@ -204,14 +209,11 @@ class TitleController extends Controller
             'titles' => 'array',
             'titles.*' => 'array',
             'titles.*.mal' => 'required|integer',
-            'titles.*.last' => 'required|numeric'
+            'titles.*.last' => 'required|numeric',
+            'titles.*.chapters' => 'array',
+            'titles.*.chapters.*' => 'numeric'
         ]);
-
-        // Options or default options
-        $options = [
-            'saveAllOpened' => $request->input('options.saveAllOpened', true),
-            'maxChapterSaved' => min($request->input('options.maxChapterSaved', 100), 100),
-        ];
+        $options = Auth::user()->getOptions($request);
 
         // Delete all old titles
         Title::where('user_id', Auth::user()->id)->delete();
@@ -251,7 +253,7 @@ class TitleController extends Controller
         }
 
         return response()->json([
-            'status' => 'Titles list updated.',
+            'status' => $total . ' title(s) inserted',
             'inserted' => $total,
         ], 200);
     }
@@ -261,7 +263,7 @@ class TitleController extends Controller
         $deleted = Title::where('user_id', '=', Auth::user()->id)->delete();
 
         return response()->json([
-            'status' => 'Deleted ' . $deleted . ' titles.'
+            'status' => 'Deleted ' . $deleted . ' title(s)'
         ], 200);
     }
 }

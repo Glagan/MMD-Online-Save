@@ -10,7 +10,7 @@ class LoginTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'Correct credentials.',
+                'status' => 'Correct credentials',
                 'token' => $this->user->token
             ]);
     }

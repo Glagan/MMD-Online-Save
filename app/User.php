@@ -71,6 +71,31 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $this->hasMany('App\HistoryTitle');
     }
 
+    public function getOptions($request)
+    {
+        $options = [];
+        if ($request->has('options')) {
+            $options = $request->input('options');
+        } else {
+            $options = [
+                'saveAllOpened' => $request->input('options.saveAllOpened', true),
+                'maxChapterSaved' => \min($request->input('options.maxChapterSaved', 100), 100),
+                'updateHistoryPage' =>  $request->input('options.updateHistoryPage', false)
+            ];
+        }
+        if (!isset($options['saveAllOpened'])) {
+            $options['saveAllOpened'] = true;
+        }
+        if (!isset($options['maxChapterSaved'])) {
+            $options['maxChapterSaved'] = 100;
+        }
+        $options['maxChapterSaved'] = \min($options['maxChapterSaved'], 100);
+        if (!isset($options['updateHistoryPage'])) {
+            $options['updateHistoryPage'] = false;
+        }
+        return $options;
+    }
+
     public function generateToken()
     {
         $this->token = bin2hex(random_bytes(25));
