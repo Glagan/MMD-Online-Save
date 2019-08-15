@@ -10,7 +10,7 @@ You need the same requirements as [Lumen](https://lumen.laravel.com/):
 * PHP >= 7.1.3
 * OpenSSL PHP Extension
 * PDO PHP Extension
-* Mbstring PHP Extension
+* mbstring PHP Extension
 
 ## Installation
 

@@ -78,17 +78,21 @@ class Title extends Model
         return $this;
     }
 
-    public function addChapterRange($from, $to)
+    public static function chapterRange($title, $from, $to)
     {
         $chapters = [];
         for ($i = $from; $i <= $to; $i++) {
             $chapters[] = [
-                'title_id' => $this->id,
+                'title_id' => $title->id,
                 'value' => $i,
             ];
         }
-        Chapter::insert($chapters);
+        return $chapters;
+    }
 
+    public function addChapterRange($from, $to)
+    {
+        Chapter::insert($this->chapterRange($this, $from, $to));
         return $this;
     }
 }

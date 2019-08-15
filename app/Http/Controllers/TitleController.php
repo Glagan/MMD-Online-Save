@@ -89,7 +89,6 @@ class TitleController extends Controller
                 if (!$created) {
                     $title->chapters()->delete();
                 }
-
                 // Construct all chapters to insert them all at once
                 $allChapters = \array_map(function($element) use ($title) {
                     return [
@@ -220,6 +219,7 @@ class TitleController extends Controller
 
         // Insert new ones
         $total = 0;
+        $allChapters = [];
         foreach ($request->input('titles', []) as $key => $value) {
             $total++;
 
@@ -237,19 +237,20 @@ class TitleController extends Controller
             if ($options['saveAllOpened']) {
                 $hasChapters = (array_key_exists('chapters', $value) && count($value['chapters']) > 0);
                 if ($hasChapters) {
-                    // Construct all chapters to insert them all at once
-                    $allChapters = array_map(function($element) use ($title) {
-                        return [
+                    foreach ($value['chapters'] as $chapter) {
+                        $allChapters[] = [
                             'title_id' => $title->id,
-                            'value' => $element
+                            'value' => $chapter
                         ];
-                    }, $value['chapters']);
-                    Chapter::insert($allChapters);
+                    }
                 } else if ($title->last > 0) {
                     $start = max($title->last - $options['maxChapterSaved'], 0);
                     $title->addChapterRange($start, $title->last);
                 }
             }
+        }
+        if (\count($allChapters) > 0) {
+            Chapter::insert($allChapters);
         }
 
         return response()->json([

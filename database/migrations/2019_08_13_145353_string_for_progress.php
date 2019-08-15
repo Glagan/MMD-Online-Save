@@ -14,10 +14,10 @@ class StringForProgress extends Migration
     public function up()
     {
         Schema::table('titles', function (Blueprint $table) {
-            $table->string('last', 255)->change();
+            $table->string('last', 255)->default('0')->change();
         });
         Schema::table('chapters', function (Blueprint $table) {
-            $table->string('value', 255)->change();
+            $table->string('value', 255)->default('0')->change();
         });
     }
 

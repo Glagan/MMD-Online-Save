@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Title;
+use App\Chapter;
 use App\HistoryEntry;
 use App\HistoryTitle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -223,8 +222,8 @@ class UserController extends Controller
         ];
         // Titles
         foreach (Auth::user()->titles as $title) {
-            $data['titles'][$title->md_id] = $title;
-            $data['titles'][$title->md_id]->chapters = $title->sortedChapters('ASC')->pluck('value');
+            $title->chapters = $title->sortedChapters('ASC')->pluck('value');
+            $data['titles'][] = $title;
         }
         // History
         $data['history']['list'] = Auth::user()->historyEntries()->pluck('md_id');
@@ -296,43 +295,60 @@ class UserController extends Controller
             }
         }
 
+        // Delete all old titles
+        Title::where('user_id', Auth::user()->id)->delete();
         if ($request->has('titles')) {
-            foreach ($request->input('titles') as $title) {
-                // Delete all old titles
-                Title::where('user_id', Auth::user()->id)->delete();
-                // Insert all titles
-                $state['titles'] = 0;
-                foreach ($request->input('titles', []) as $key => $value) {
-                    $state['titles']++;
-                    // Make a new title
-                    $title = Title::make([
-                        'md_id' => $key,
-                        'mal_id' => $request->input('titles.' . $key . '.mal', 0),
-                        'last' => $request->input('titles.' . $key . '.last', 0),
-                    ]);
-                    $title->user_id = Auth::user()->id;
-                    // Done App\Title
-                    $title->save();
-
-                    // Update chapters list
-                    if ($options['saveAllOpened']) {
-                        $hasChapters = (array_key_exists('chapters', $value) && count($value['chapters']) > 0);
-                        if ($hasChapters) {
-                            // Construct all chapters to insert them all at once
-                            $allChapters = array_map(function ($element) use ($title) {
-                                return [
-                                    'title_id' => $title->id,
-                                    'value' => $element
-                                ];
-                            }, $value['chapters']);
-                            Chapter::insert($allChapters);
-                        } else if ($title->last > 0) {
-                            $start = max($title->last - $options['maxChapterSaved'], 0);
-                            $title->addChapterRange($start, $title->last);
+            foreach ($request->input('titles', []) as $key => $value) {
+                $state['titles']++;
+                // Make a new title
+                $newTitle = [
+                    'user_id' => Auth::user()->id,
+                    'md_id' => $key,
+                    'mal_id' => $request->input('titles.' . $key . '.mal', 0),
+                    'last' => $request->input('titles.' . $key . '.last', 0),
+                ];
+                $chapterList = [ 'md_id' => $key, 'list' => [] ];
+                if ($options['saveAllOpened']) {
+                    $hasChapters = (isset($value['chapters']) && is_array($value['chapters']));
+                    if ($hasChapters) {
+                        $chapterList['list'] = $value['chapters'];
+                    } else if ($newTitle['last'] > 0) {
+                        $chapterList['generate'] = true;
+                    }
+                }
+                $titles[] = $newTitle;
+                $chapters[] = $chapterList;
+            }
+            Title::insert($titles);
+            $titles = Title::where('user_id', Auth::user()->id)->get();
+            // Chapters
+            if ($options['saveAllOpened']) {
+                $allChapters = [];
+                foreach ($chapters as $titleChapters) {
+                    $currentTitle = false;
+                    foreach ($titles as $tmpTitle) {
+                        if ($tmpTitle->md_id == $titleChapters['md_id']) {
+                            $currentTitle = $tmpTitle;
+                            break;
+                        }
+                    }
+                    if (isset($titleChapters['generate'])) {
+                        $start = max($newTitle['last'] - $options['maxChapterSaved'], 0);
+                        $chapters = Title::chapterRange($currentTitle, $start, $newTitle['last']);
+                        foreach ($chapters as $chapter) {
+                            $allChapters[] = $chapter;
+                        }
+                    } else {
+                        foreach ($titleChapters['list'] as $chapter) {
+                            $allChapters[] = [
+                                'title_id' => $currentTitle->id,
+                                'value' => $chapter
+                            ];
                         }
                     }
                 }
             }
+            Chapter::insert($allChapters);
         }
 
         if ($request->has('history')) {
