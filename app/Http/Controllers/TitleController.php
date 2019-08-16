@@ -156,7 +156,7 @@ class TitleController extends Controller
                 $historyTitle->user_id = Auth::user()->id;
             }
             $historyTitle->progress = $title->last;
-            $historyTitle->chapter_id = $request->input('chapter_id');
+            $historyTitle->chapter = $request->input('chapter');
             $historyTitle->save();
         }
 

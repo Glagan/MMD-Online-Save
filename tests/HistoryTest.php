@@ -13,7 +13,7 @@ class HistoryTest extends TestCase
                 'name' => bin2hex(random_bytes(20)),
                 'md_id' => 112 + $i,
                 'progress' => \mt_rand(0, 800),
-                'chapter_id' => \mt_rand(1, 88888)
+                'chapter' => \mt_rand(1, 88888)
             ];
         }
         $this->post('/user/self/history', [
@@ -36,7 +36,7 @@ class HistoryTest extends TestCase
                 'name' => 12,
                 'md_id' => 1,
                 'progress' => 123,
-                'chapter_id' => 645
+                'chapter' => 645
             ]
         ];
         $this->post('/user/self/history', [

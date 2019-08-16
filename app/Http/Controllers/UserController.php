@@ -205,7 +205,7 @@ class UserController extends Controller
      *      name
      *      md_id
      *      progress
-     *      chapter_id
+     *      chapter
      *    }
      *  }
      * }
@@ -248,7 +248,7 @@ class UserController extends Controller
      *      name
      *      md_id
      *      progress
-     *      chapter_id
+     *      chapter
      *    }
      *  }
      * }
@@ -270,7 +270,7 @@ class UserController extends Controller
             'history.titles.*.name' => 'required|string',
             'history.titles.*.md_id' => 'required|integer',
             'history.titles.*.progress' => 'required|numeric',
-            'history.titles.*.chapter_id' => 'required|integer'
+            'history.titles.*.chapter' => 'required|integer'
         ]);
         $state = [
             'options' => 'Options not updated',
@@ -371,7 +371,7 @@ class UserController extends Controller
                     'name' => $historyTitle['name'],
                     'md_id' => $historyTitle['md_id'],
                     'progress' => $historyTitle['progress'],
-                    'chapter_id' => $historyTitle['chapter_id'],
+                    'chapter' => $historyTitle['chapter'],
                     'user_id' => Auth::user()->id
                 ];
             }

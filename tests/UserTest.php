@@ -332,25 +332,25 @@ class UserTest extends TestCase
                         'name' => 'La bible',
                         'md_id' => 112,
                         'progress' => 121,
-                        'chapter_id' => 6771
+                        'chapter' => 6771
                     ],
                     [
                         'name' => 'Francois IV',
                         'md_id' => 113,
                         'progress' => 95,
-                        'chapter_id' => 12578
+                        'chapter' => 12578
                     ],
                     [
                         'name' => 'Domo Arigator',
                         'md_id' => 114,
                         'progress' => 112.2,
-                        'chapter_id' => 4887
+                        'chapter' => 4887
                     ],
                     [
                         'name' => 'One Piece',
                         'md_id' => 115,
                         'progress' => '789',
-                        'chapter_id' => 67578
+                        'chapter' => 67578
                     ]
                 ]
             ]
@@ -494,25 +494,25 @@ class UserTest extends TestCase
                         'name' => 'La bible',
                         'md_id' => 112,
                         'progress' => 121,
-                        'chapter_id' => 6771
+                        'chapter' => 6771
                     ],
                     [
                         'name' => 'Francois IV',
                         'md_id' => 113,
                         'progress' => 95,
-                        'chapter_id' => 12578
+                        'chapter' => 12578
                     ],
                     [
                         'name' => 'Domo Arigator',
                         'md_id' => 114,
                         'progress' => 112.2,
-                        'chapter_id' => 4887
+                        'chapter' => 4887
                     ],
                     [
                         'name' => 'One Piece',
                         'md_id' => 115,
                         'progress' => '789',
-                        'chapter_id' => 67578
+                        'chapter' => 67578
                     ]
                 ]
             ]
@@ -535,28 +535,28 @@ class UserTest extends TestCase
                 'name' => 'La bible',
                 'md_id' => 112,
                 'progress' => '121',
-                'chapter_id' => 6771,
+                'chapter' => 6771,
             ])
             ->seeInDatabase('history_titles', [
                 'user_id' => 1,
                 'name' => 'Francois IV',
                 'md_id' => 113,
                 'progress' => '95',
-                'chapter_id' => 12578,
+                'chapter' => 12578,
             ])
             ->seeInDatabase('history_titles', [
                 'user_id' => 1,
                 'name' => 'Domo Arigator',
                 'md_id' => 114,
                 'progress' => '112.2',
-                'chapter_id' => 4887,
+                'chapter' => 4887,
             ])
             ->seeInDatabase('history_titles', [
                 'user_id' => 1,
                 'name' => 'One Piece',
                 'md_id' => 115,
                 'progress' => '789',
-                'chapter_id' => 67578,
+                'chapter' => 67578,
             ]);
     }
 
@@ -572,7 +572,7 @@ class UserTest extends TestCase
                         'name' => 'La bible',
                         'md_id' => 'string',
                         'progress' => 121,
-                        'chapter_id' => 6771
+                        'chapter' => 6771
                     ]
                 ]
             ]

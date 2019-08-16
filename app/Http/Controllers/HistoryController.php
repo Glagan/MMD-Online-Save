@@ -34,7 +34,7 @@ class HistoryController extends Controller
             'history.titles.*.name' => 'required|string',
             'history.titles.*.md_id' => 'required|integer',
             'history.titles.*.progress' => 'required|numeric',
-            'history.titles.*.chapter_id' => 'required|numeric'
+            'history.titles.*.chapter' => 'required|numeric'
         ]);
 
         // Insert list
@@ -60,7 +60,7 @@ class HistoryController extends Controller
                 'name' => $value['name'],
                 'md_id' => $value['md_id'],
                 'progress' => $value['progress'],
-                'chapter_id' => $value['chapter_id']
+                'chapter' => $value['chapter']
             ]);
             $historyTitle->user_id = Auth::user()->id;
             // Done App\Title

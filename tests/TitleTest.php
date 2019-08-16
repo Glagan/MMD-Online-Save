@@ -310,7 +310,7 @@ class TitleTest extends TestCase
                 'updateHistoryPage' => true
             ],
             'title_name' => 'One Piece',
-            'chapter_id' => 16454
+            'chapter' => 16454
         ], [
             'X-Auth-Token' => $this->user->token
         ])
@@ -332,7 +332,7 @@ class TitleTest extends TestCase
                 'name' => 'One Piece',
                 'md_id' => 12,
                 'progress' => '999',
-                'chapter_id' => 16454
+                'chapter' => 16454
             ]);
     }
 
