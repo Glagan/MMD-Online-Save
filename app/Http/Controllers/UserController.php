@@ -228,7 +228,7 @@ class UserController extends Controller
         // History
         $data['history']['list'] = Auth::user()->historyEntries()->pluck('md_id');
         foreach (Auth::user()->historyTitles()->get() as $title) {
-            $data['history']['titles'][$title->md_id] = $title;
+            $data['history']['titles'][] = $title;
         }
         return response()->json($data, 200);
     }
