@@ -56,7 +56,7 @@ class TitleController extends Controller
             'chapters' => 'array',
             'chapters.*' => 'numeric',
             'title_name' => 'required_if:options.updateHistoryPage,true',
-            'chapter_id' => 'required_if:options.updateHistoryPage,true|numeric'
+            'chapter' => 'required_if:options.updateHistoryPage,true|numeric'
         ]);
 
         $title = Title::firstOrNew([
