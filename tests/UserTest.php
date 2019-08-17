@@ -359,7 +359,7 @@ class UserTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'Data imported',
+                'status' => 'Data saved online',
                 'options' => 'Options updated',
                 'titles' => '5 title(s) imported',
                 'history' => 'History updated'
@@ -380,7 +380,7 @@ class UserTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'Data imported',
+                'status' => 'Data saved online',
                 'options' => 'Options updated',
                 'titles' => '0 title(s) imported',
                 'history' => 'History not updated'
@@ -427,7 +427,7 @@ class UserTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'Data imported',
+                'status' => 'Data saved online',
                 'options' => 'Options not updated',
                 'titles' => '5 title(s) imported',
                 'history' => 'History not updated'
@@ -521,7 +521,7 @@ class UserTest extends TestCase
         ])
             ->seeStatusCode(200)
             ->seeJson([
-                'status' => 'Data imported',
+                'status' => 'Data saved online',
                 'options' => 'Options not updated',
                 'titles' => '0 title(s) imported',
                 'history' => 'History updated'
@@ -534,28 +534,28 @@ class UserTest extends TestCase
                 'user_id' => 1,
                 'name' => 'La bible',
                 'md_id' => 112,
-                'progress' => '121',
+                'progress' => 121,
                 'chapter' => 6771,
             ])
             ->seeInDatabase('history_titles', [
                 'user_id' => 1,
                 'name' => 'Francois IV',
                 'md_id' => 113,
-                'progress' => '95',
+                'progress' => 95,
                 'chapter' => 12578,
             ])
             ->seeInDatabase('history_titles', [
                 'user_id' => 1,
                 'name' => 'Domo Arigator',
                 'md_id' => 114,
-                'progress' => '112.2',
+                'progress' => 112.2,
                 'chapter' => 4887,
             ])
             ->seeInDatabase('history_titles', [
                 'user_id' => 1,
                 'name' => 'One Piece',
                 'md_id' => 115,
-                'progress' => '789',
+                'progress' => 789,
                 'chapter' => 67578,
             ]);
     }

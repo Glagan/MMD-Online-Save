@@ -56,7 +56,8 @@ class TitleController extends Controller
             'chapters' => 'array',
             'chapters.*' => 'numeric',
             'title_name' => 'required_if:options.updateHistoryPage,true',
-            'chapter' => 'required_if:options.updateHistoryPage,true|numeric'
+            'chapter' => 'required_if:options.updateHistoryPage,true|numeric',
+            'volume' => 'numeric'
         ]);
 
         $title = Title::firstOrNew([
@@ -117,7 +118,8 @@ class TitleController extends Controller
         }
 
         // Save History
-        if ($options['updateHistoryPage']) {
+        if ($options['updateHistoryPage'] &&
+            $request->input('chapter', 0) > 0) {
             // Entry in the list
             $historyEntry = HistoryEntry::where([
                 [ 'user_id', Auth::user()->id ],
@@ -155,6 +157,7 @@ class TitleController extends Controller
                 ]);
                 $historyTitle->user_id = Auth::user()->id;
             }
+            $historyTitle->volume = $request->input('volume', 0);
             $historyTitle->progress = $title->last;
             $historyTitle->chapter = $request->input('chapter');
             $historyTitle->save();

@@ -33,7 +33,7 @@ class HistoryController extends Controller
             'history.titles.*' => 'array',
             'history.titles.*.name' => 'required|string',
             'history.titles.*.md_id' => 'required|integer',
-            'history.titles.*.progress' => 'required|numeric',
+            'history.titles.*.progress' => 'required',
             'history.titles.*.chapter' => 'required|numeric'
         ]);
 
@@ -59,9 +59,18 @@ class HistoryController extends Controller
             $historyTitle = HistoryTitle::make([
                 'name' => $value['name'],
                 'md_id' => $value['md_id'],
-                'progress' => $value['progress'],
                 'chapter' => $value['chapter']
             ]);
+            if (is_array($value['progress'])) {
+                if (isset($value['progress']['chapter'])) {
+                    $historyTitle->progress = $value['progress']['chapter'];
+                }
+                if (isset($value['progress']['volume'])) {
+                    $historyTitle->volume = $value['progress']['volume'];
+                }
+            } else {
+                $historyTitle->progress = $value['progress'];
+            }
             $historyTitle->user_id = Auth::user()->id;
             // Done App\Title
             $historyTitle->save();
@@ -77,7 +86,15 @@ class HistoryController extends Controller
         $history = [ 'list' => Auth::user()->historyEntries() ];
         $historyTitles = Auth::user()->historyTitles();
         foreach ($historyTitles as $value) {
-            $history[$value->md_id] = $value;
+            $history[$value->md_id] = [
+                'name' => $value->name,
+                'md_id' => $value->md_id,
+                'chapter' => $value->chapter,
+                'progress' => [
+                    'volume' => $value->volume,
+                    'chapter' => $value->progress
+                ]
+            ];
         }
         return response()->json([
             'history' => $history

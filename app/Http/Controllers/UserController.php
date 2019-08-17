@@ -222,13 +222,25 @@ class UserController extends Controller
         ];
         // Titles
         foreach (Auth::user()->titles as $title) {
-            $title->chapters = $title->sortedChapters('ASC')->pluck('value');
+            $title->chapters = $title->sortedChapters('DESC')->pluck('value');
             $data['titles'][] = $title;
         }
         // History
         $data['history']['list'] = Auth::user()->historyEntries()->pluck('md_id');
         foreach (Auth::user()->historyTitles()->get() as $title) {
-            $data['history']['titles'][] = $title;
+            if ($title->chapter == 0) {
+                $title->delete();
+            } else {
+                $data['history']['titles'][] = [
+                    'name' => $title->name,
+                    'md_id' => $title->md_id,
+                    'chapter' => $title->chapter,
+                    'progress' => [
+                        'volume' => $title->volume,
+                        'chapter' => $title->progress
+                    ]
+                ];;
+            }
         }
         return response()->json($data, 200);
     }
@@ -269,8 +281,8 @@ class UserController extends Controller
             'history.titles.*' => 'array',
             'history.titles.*.name' => 'required|string',
             'history.titles.*.md_id' => 'required|integer',
-            'history.titles.*.progress' => 'required|numeric',
-            'history.titles.*.chapter' => 'required|integer'
+            'history.titles.*.progress' => 'required',
+            'history.titles.*.chapter' => 'required|numeric'
         ]);
         $state = [
             'options' => 'Options not updated',
@@ -366,20 +378,34 @@ class UserController extends Controller
             // Titles
             Auth::user()->historyTitles()->delete();
             $titles = [];
-            foreach ($request->input('history.titles', []) as $key => $historyTitle) {
-                $titles[] = [
-                    'name' => $historyTitle['name'],
-                    'md_id' => $historyTitle['md_id'],
-                    'progress' => $historyTitle['progress'],
-                    'chapter' => $historyTitle['chapter'],
-                    'user_id' => Auth::user()->id
-                ];
+            foreach ($request->input('history.titles', []) as $historyTitle) {
+                if ($historyTitle['chapter'] > 0) {
+                    $tmpTitle = [
+                        'name' => $historyTitle['name'],
+                        'md_id' => $historyTitle['md_id'],
+                        'chapter' => $historyTitle['chapter'],
+                        'progress' => 0,
+                        'volume' => 0,
+                        'user_id' => Auth::user()->id
+                    ];
+                    if (is_array($historyTitle['progress'])) {
+                        if (isset($historyTitle['progress']['chapter'])) {
+                            $tmpTitle['progress'] = $historyTitle['progress']['chapter'];
+                        }
+                        if (isset($historyTitle['progress']['volume'])) {
+                            $tmpTitle['volume'] = $historyTitle['progress']['volume'];
+                        }
+                    } else {
+                        $tmpTitle['progress'] = $historyTitle['progress'];
+                    }
+                    $titles[] = $tmpTitle;
+                }
             }
             HistoryTitle::insert($titles);
         }
 
         return response()->json([
-            'status' => 'Data imported',
+            'status' => 'Data saved online',
             'options' => $state['options'],
             'titles' => $state['titles'] . ' title(s) imported',
             'history' => $state['history']
