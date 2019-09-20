@@ -239,7 +239,7 @@ class UserController extends Controller
                         'volume' => $title->volume,
                         'chapter' => $title->progress
                     ]
-                ];;
+                ];
             }
         }
         return response()->json($data, 200);
@@ -351,7 +351,7 @@ class UserController extends Controller
                             $allChapters[] = $chapter;
                         }
                     } else {
-                        foreach ($titleChapters['list'] as $chapter) {
+                        foreach (\array_unique($titleChapters['list']) as $chapter) {
                             $allChapters[] = [
                                 'title_id' => $currentTitle->id,
                                 'value' => $chapter
