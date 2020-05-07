@@ -25,7 +25,7 @@ abstract class TestCase extends Laravel\Lumen\Testing\TestCase
     ];
     protected $user;
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         // Delete users

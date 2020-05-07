@@ -7,7 +7,7 @@ Store MyMangaDex saves to be able to sync between devices or browsers.
 You need the same requirements as [Lumen](https://lumen.laravel.com/):
 
 * [Composer](http://getcomposer.org/)
-* PHP >= 7.1.3
+* PHP >= 7.2.5
 * OpenSSL PHP Extension
 * PDO PHP Extension
 * mbstring PHP Extension
@@ -17,7 +17,7 @@ You need the same requirements as [Lumen](https://lumen.laravel.com/):
 Install all composer dependencies:
 
 ```bash
-composer update
+composer install
 ```
 
 Then you need to set the variables in the ``.env`` file, the required one are ``APP_KEY`` and the ``DB_`` parameters.  
@@ -146,6 +146,6 @@ You can then use ``localhost:8000`` as the API url in your MyMangaDex options.
 
 ## Tests
 
-There is more than 70 tests, you can run them by executing ``phpunit`` in the ``vendor/bin`` folder.
+There is more than 80 tests, you can run them by executing ``phpunit`` in the ``vendor/bin`` folder.
 
 > This will modify the database, don't execute test with real data already in the database
