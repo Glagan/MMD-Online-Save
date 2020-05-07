@@ -163,7 +163,8 @@ class TitleController extends Controller
             $historyTitle->save();
         }
 
-        // Done
+		// Done
+		Auth::user()->didUpdate()->save();
         return response()->json([
             'status' => 'Title #' . $mangaDexId . ' ' . (($created) ? 'added' : 'updated') . '.',
             'last' => $title->last,
@@ -184,6 +185,7 @@ class TitleController extends Controller
             ], 200);
         }
 
+		Auth::user()->didUpdate()->save();
         return response()->json([
             'status' => 'No title with the id #' . $mangaDexId
         ], 404);
@@ -256,6 +258,7 @@ class TitleController extends Controller
             Chapter::insert($allChapters);
         }
 
+		Auth::user()->didUpdate()->save();
         return response()->json([
             'status' => $total . ' title(s) inserted',
             'inserted' => $total,
@@ -266,6 +269,7 @@ class TitleController extends Controller
     {
         $deleted = Title::where('user_id', '=', Auth::user()->id)->delete();
 
+		Auth::user()->didUpdate()->save();
         return response()->json([
             'status' => 'Deleted ' . $deleted . ' title(s)'
         ], 200);

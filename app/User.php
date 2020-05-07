@@ -100,5 +100,17 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         $this->token = bin2hex(random_bytes(25));
         return $this;
-    }
+	}
+
+	public function didSync()
+	{
+		$this->last_sync = new \Datetime();
+		return $this;
+	}
+
+	public function didUpdate()
+	{
+		$this->last_update = new \Datetime();
+		return $this;
+	}
 }

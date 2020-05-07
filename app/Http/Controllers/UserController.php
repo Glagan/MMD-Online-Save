@@ -96,7 +96,7 @@ class UserController extends Controller
      */
     public function refreshToken()
     {
-        Auth::user()->generateToken()->save();
+        Auth::user()->generateToken()->didUpdate()->save();
 
         // Return token
         return response()->json([
@@ -121,10 +121,10 @@ class UserController extends Controller
         if ($request->has('options')) {
             Auth::user()->options = \json_encode($request->input('options'));
         }
-        Auth::user()->generateToken();
-        // Save
-        Auth::user()->save();
+		Auth::user()->generateToken();
 
+        // Save
+		Auth::user()->didUpdate()->save();
         return response()->json([
             'status' => 'User updated',
             'options' => \json_decode(Auth::user()->options, true),
@@ -181,7 +181,7 @@ class UserController extends Controller
             'options' => 'array'
         ]);
         Auth::user()->options = \json_encode($request->input('options'));
-        Auth::user()->save();
+        Auth::user()->didUpdate()->save();
 
         return response()->json([
             'status' => 'Options saved',
@@ -241,7 +241,9 @@ class UserController extends Controller
                     ]
                 ];
             }
-        }
+		}
+
+		Auth::user()->didSync()->save();
         return response()->json($data, 200);
     }
 
@@ -404,6 +406,7 @@ class UserController extends Controller
             HistoryTitle::insert($titles);
         }
 
+		Auth::user()->didUpdate()->save();
         return response()->json([
             'status' => 'Data saved online',
             'options' => $state['options'],

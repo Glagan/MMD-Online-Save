@@ -5,7 +5,7 @@ class UserTest extends TestCase
     protected $newFields = [
         'password' => 'newlengthof13',
         'options' => [
-            'version' => 2.0,
+            'version' => 2.4,
             'updated' => true
         ]
     ];
@@ -52,7 +52,7 @@ class UserTest extends TestCase
     public function testUpdateUser()
     {
         $newOptions = [
-            'version' => 2.0
+            'version' => 2.4
         ];
         $this->post('/user/self', [
             'password' => 'newlengthof13',
@@ -226,7 +226,7 @@ class UserTest extends TestCase
     public function testPostUserOptions()
     {
         $newOptions = [
-            'version' => 2.0,
+            'version' => 2.4,
             'color' => 'red',
         ];
         $this->post('/user/self/options', [
@@ -369,7 +369,7 @@ class UserTest extends TestCase
     public function testImportOptionsOnly()
     {
         $options = [
-            'version' => '2.0',
+            'version' => 2.4,
             'saveAllOpened' => true,
             'test' => false
         ];

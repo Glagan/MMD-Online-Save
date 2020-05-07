@@ -21,7 +21,7 @@ abstract class TestCase extends Laravel\Lumen\Testing\TestCase
     protected $password = 'lengthof10';
     protected $hashedPassword;
     protected $options = [
-        'version' => 2.0
+        'version' => 2.4
     ];
     protected $user;
 

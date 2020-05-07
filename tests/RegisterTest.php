@@ -5,7 +5,7 @@ class RegisterTest extends TestCase
     public function testWorkingRegisterWithOptions()
     {
         $options = [
-            'version' => 2.1,
+            'version' => 2.4,
             'key' => 'value'
         ];
         $this->post('/user', [

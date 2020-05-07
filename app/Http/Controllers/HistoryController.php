@@ -74,7 +74,9 @@ class HistoryController extends Controller
             $historyTitle->user_id = Auth::user()->id;
             // Done App\Title
             $historyTitle->save();
-        }
+		}
+
+		Auth::user()->didUpdate()->save();
         return response()->json([
             'status' => 'History updated',
             'inserted' => $total
@@ -106,6 +108,7 @@ class HistoryController extends Controller
         HistoryEntry::where('user_id', Auth::user()->id)->delete();
         HistoryTitle::where('user_id', Auth::user()->id)->delete();
 
+		Auth::user()->didUpdate()->save();
         return response()->json([
             'status' => 'History deleted'
         ], 200);
