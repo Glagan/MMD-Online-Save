@@ -28,48 +28,47 @@
  * /user
  */
 $router->group(['prefix' => 'user'], function ($router) {
-    $router->post('/', ['uses' => 'UserController@register']);
-    $router->get('/', ['uses' => 'UserController@login']);
+	$router->post('/', ['uses' => 'UserController@register']);
+	$router->get('/', ['uses' => 'UserController@login']);
 });
 
 /**
  * /user/self
  */
 $router->group(['prefix' => 'user/self'], function ($router) {
-    $router->get('token', ['uses' => 'UserController@showToken']);
-    $router->get('token/refresh', ['uses' => 'UserController@refreshToken']);
+	$router->get('token', ['uses' => 'UserController@showToken']);
+	$router->get('token/refresh', ['uses' => 'UserController@refreshToken']);
 
-    $router->get('/', ['uses' => 'UserController@show']);
-    $router->post('/', ['uses' => 'UserController@update']);
-    $router->delete('/', ['uses' => 'UserController@delete']);
+	$router->get('/', ['uses' => 'UserController@show']);
+	$router->post('/', ['uses' => 'UserController@update']);
+	$router->delete('/', ['uses' => 'UserController@delete']);
 
-    $router->get('options', ['uses' => 'UserController@showOptions']);
-    $router->post('options', ['uses' => 'UserController@updateOptions']);
+	$router->get('options', ['uses' => 'UserController@showOptions']);
+	$router->post('options', ['uses' => 'UserController@updateOptions']);
 
-    $router->get('history', ['uses' => 'HistoryController@showAll']);
-    $router->post('history', ['uses' => 'HistoryController@updateAll']);
-    $router->delete('history', ['uses' => 'HistoryController@deleteAll']);
+	$router->get('export', ['uses' => 'UserController@exportAll_deprecated']);
+	$router->post('import', ['uses' => 'UserController@importAll_deprecated']);
 
-    $router->get('export', ['uses' => 'UserController@exportAll']);
-    $router->post('import', ['uses' => 'UserController@importAll']);
+	$router->get('export/v2', ['uses' => 'UserController@exportAll']);
+	$router->post('import/v2', ['uses' => 'UserController@importAll']);
 });
 
 /**
  * /user/self/title
  */
 $router->group(['prefix' => 'user/self/title'], function ($router) {
-    $router->get('/', ['uses' => 'TitleController@showAll']);
-    $router->post('/', ['uses' => 'TitleController@updateAll']);
-    $router->delete('/', ['uses' => 'TitleController@deleteAll']);
+	$router->get('/', ['uses' => 'TitleController@showAll']);
+	$router->post('/', ['uses' => 'TitleController@updateAll']);
+	$router->delete('/', ['uses' => 'TitleController@deleteAll']);
 });
 
 /**
  * /user/self/title/{mangaDexId}
  */
 $router->group(['prefix' => 'user/self/title/{mangaDexId}'], function ($router) {
-    $router->get('/', ['uses' => 'TitleController@showSingle']);
-    $router->post('/', ['uses' => 'TitleController@updateSingle']);
-    $router->delete('/', ['uses' => 'TitleController@deleteSingle']);
+	$router->get('/', ['uses' => 'TitleController@showSingle']);
+	$router->post('/', ['uses' => 'TitleController@updateSingle']);
+	$router->delete('/', ['uses' => 'TitleController@deleteSingle']);
 
-    //$router->get('chapters', ['uses' => 'TitleController@showChapters']);
+	//$router->get('chapters', ['uses' => 'TitleController@showChapters']);
 });

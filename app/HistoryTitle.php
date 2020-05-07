@@ -14,7 +14,7 @@ class HistoryTitle extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'md_id', 'volume', 'progress', 'chapter'
+        'name', 'md_id', 'volume', 'progress', 'chapter', 'lastRead', 'highest'
     ];
 
     /**
