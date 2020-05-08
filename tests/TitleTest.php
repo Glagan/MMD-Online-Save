@@ -383,6 +383,49 @@ class TitleTest extends TestCase
 			]);
 	}
 
+	public function testUpdateSingleHistoryExtended()
+	{
+		$this->post('/user/self/title/12', [
+			'mal' => 1337,
+			'last' => 999,
+			'options' => [
+				'saveAllOpened' => true,
+				'maxChapterSaved' => 100,
+				'updateHistoryPage' => true
+			],
+			'title_name' => 'One Piece',
+			'chapter' => 16454,
+			'volume' => 90,
+			'highest' => 1012,
+			'lastRead' => 1234556789
+		], [
+			'X-Auth-Token' => $this->user->token
+		])
+			->seeStatusCode(200)
+			->seeJsonStructure([
+				'status'
+			])
+			->seeJson([
+				'last' => 999
+			])
+			->seeInDatabase('titles', [
+				'user_id' => Auth::user()->id,
+				'mal_id' => 1337,
+				'md_id' => 12,
+				'last' => '999'
+			])
+			->seeInDatabase('history_titles', [
+				'user_id' => Auth::user()->id,
+				'name' => 'One Piece',
+				'md_id' => 12,
+				'progress' => '999',
+				'chapter' => 16454,
+				'volume' => 90,
+				'highest' => 1012,
+				'lastRead' => 1234556789
+			]);
+	}
+
 	public function testUpdateSingleHistoryInvalidField()
 	{
 		$this->post('/user/self/title/12', [
