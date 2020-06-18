@@ -561,6 +561,7 @@ class UserController extends Controller
 			$chapters = [];
 			$historyTitles = [];
 			foreach ($request->input('titles', []) as $key => $value) {
+				if (!is_int($key)) continue;
 				$state['titles']++;
 				// Make a new title
 				$newTitle = [

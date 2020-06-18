@@ -750,6 +750,68 @@ class ImportTest extends TestCase
 			->seeStatusCode(422);
 	}
 
+	public function testImportTitlesInvalidKeyIgnored()
+	{
+		$this->post('/user/self/import/v2', [
+			'titles' => [
+				'12' => [
+					'mal' => 1245,
+					'last' => 0
+				],
+				'undefined' => [
+					'mal' => 47,
+					'last' => 89
+				],
+				'789' => [],
+				'147' => [
+					'mal' => 0,
+					'last' => 12.5
+				],
+			]
+		], [
+			'X-Auth-Token' => $this->user->token
+		])
+			->seeStatusCode(200)
+			->seeJson([
+				'status' => 'Data saved online',
+				'options' => 'Options not updated',
+				'titles' => '3 title(s) imported',
+				'history' => 'History not updated'
+			])
+			->seeInDatabase('titles', [
+				'user_id' => 1,
+				'md_id' => 12,
+				'mal_id' => 1245,
+				'last' => '0'
+			])
+			->seeInDatabase('titles', [
+				'user_id' => 1,
+				'md_id' => 789,
+				'mal_id' => 0,
+				'last' => '0'
+			])
+			->seeInDatabase('titles', [
+				'user_id' => 1,
+				'md_id' => 147,
+				'mal_id' => 0,
+				'last' => '12.5'
+			]);
+	}
+	public function testImportTitlesInvalidChapters()
+	{
+		$this->post('/user/self/import/v2', [
+			'titles' => [
+				'1354' => [
+					'mal' => 0,
+					'last' => 12.5,
+					'chapters' => 12
+				]
+			]
+		], [
+			'X-Auth-Token' => $this->user->token
+		])
+			->seeStatusCode(422);
+	}
 
 	public function testImportMissingHistoryChapter()
 	{
