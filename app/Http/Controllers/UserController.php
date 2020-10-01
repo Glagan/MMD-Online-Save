@@ -631,8 +631,8 @@ class UserController extends Controller
 						}
 					}
 				}
+				Chapter::insert($allChapters);
 			}
-			Chapter::insert($allChapters);
 		}
 
 		Auth::user()->didUpdate()->save();

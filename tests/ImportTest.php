@@ -886,4 +886,133 @@ class ImportTest extends TestCase
 		])
 			->seeStatusCode(401);
 	}
+
+	public function testImportNoSaveAllOpened()
+	{
+		$this->post('/user/self/import/v2', [
+			'options' => [
+				'saveAllOpened' => false,
+				'updateHistoryPage' => true
+			],
+			'titles' => [
+				'112' => [
+					'mal' => 1245,
+					'last' => 0,
+					'name' => 'La bible',
+					'progress' => ['chapter' => 121],
+					'chapterId' => 6771,
+					'highest' => 125
+				],
+				'113' => [
+					'mal' => 4321,
+					'last' => 95,
+					'name' => 'Francois IV',
+					'progress' => ['chapter' => 95, 'volume' => 4],
+					'chapterId' => 12578,
+					'highest' => 145
+				],
+				'1232' => [
+					'mal' => 47,
+					'last' => 89
+				],
+				'45' => [
+					'last' => 999
+				],
+				'789' => [],
+				'147' => [
+					'mal' => 0,
+					'last' => 12.5
+				],
+				'114' => [
+					'mal' => 1,
+					'last' => 12.5,
+					'name' => 'One Piece',
+					'progress' => ['chapter' => 789],
+					'chapterId' => 67578,
+					'highest' => 900
+				]
+			],
+			'history' => [112, 113, 114]
+		], [
+			'X-Auth-Token' => $this->user->token
+		])
+			->seeStatusCode(200)
+			->seeJson([
+				'status' => 'Data saved online',
+				'options' => 'Options updated',
+				'titles' => '7 title(s) imported',
+				'history' => 'History updated'
+			])
+			->seeInDatabase('titles', [
+				'user_id' => 1,
+				'md_id' => 112,
+				'mal_id' => 1245,
+				'last' => '0'
+			])
+			->seeInDatabase('titles', [
+				'user_id' => 1,
+				'md_id' => 113,
+				'mal_id' => 4321,
+				'last' => '95'
+			])
+			->seeInDatabase('titles', [
+				'user_id' => 1,
+				'md_id' => 1232,
+				'mal_id' => 47,
+				'last' => '89'
+			])
+			->seeInDatabase('titles', [
+				'user_id' => 1,
+				'md_id' => 45,
+				'mal_id' => 0,
+				'last' => '999'
+			])
+			->seeInDatabase('titles', [
+				'user_id' => 1,
+				'md_id' => 147,
+				'mal_id' => 0,
+				'last' => '12.5'
+			])
+			->seeInDatabase('titles', [
+				'user_id' => 1,
+				'md_id' => 114,
+				'mal_id' => 1,
+				'last' => '12.5'
+			])
+			->seeInDatabase('titles', [
+				'user_id' => 1,
+				'md_id' => 789,
+				'mal_id' => 0,
+				'last' => '0'
+			])
+			->seeInDatabase('history_entries', [
+				'user_id' => 1,
+				'md_id' => [112, 113, 114]
+			])
+			->seeInDatabase('history_titles', [
+				'user_id' => 1,
+				'md_id' => 112,
+				'name' => 'La bible',
+				'progress' => '121',
+				'chapter' => 6771,
+				'highest' => '125'
+			])
+			->seeInDatabase('history_titles', [
+				'user_id' => 1,
+				'md_id' => 113,
+				'name' => 'Francois IV',
+				'progress' => '95',
+				'volume' => '4',
+				'chapter' => 12578,
+				'highest' => '145'
+			])
+			->seeInDatabase('history_titles', [
+				'user_id' => 1,
+				'md_id' => 114,
+				'name' => 'One Piece',
+				'progress' => '789',
+				'chapter' => 67578,
+				'highest' => '900'
+			]);
+	}
 }

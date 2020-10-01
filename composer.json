@@ -11,6 +11,7 @@
 	"require": {
 		"php": ">=7.2",
 		"doctrine/dbal": "^2.8",
+		"flipbox/lumen-generator": "^7.0",
 		"laravel/lumen-framework": "^7.0",
 		"vlucas/phpdotenv": "^4.0"
 	},
