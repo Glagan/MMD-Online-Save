@@ -6,7 +6,7 @@ class TitleTest extends TestCase
 {
 	protected function getTitle()
 	{
-		factory(App\Title::class)->create([
+		Title::factory()->create([
 			'user_id' => $this->user->id
 		]);
 		return App\Title::where('user_id', $this->user->id)->firstOrFail();

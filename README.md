@@ -7,10 +7,8 @@ Store MyMangaDex saves to be able to sync between devices or browsers.
 You need the same requirements as [Lumen](https://lumen.laravel.com/):
 
 * [Composer](http://getcomposer.org/)
-* PHP >= 7.2.5
-* OpenSSL PHP Extension
-* PDO PHP Extension
-* mbstring PHP Extension
+* PHP >= 7.3
+* All **Lumen 8.0** dependencies
 
 ## Installation
 

@@ -7,10 +7,11 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract
 {
-    use Authenticatable, Authorizable;
+    use Authenticatable, Authorizable, HasFactory;
 
     const CREATED_AT = 'creation_date';
     const UPDATED_AT = 'last_update';
@@ -21,7 +22,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'token', 'options', 'titles', 'last_sync', 'last_update', 'creation_date'
+        'username', 'token', 'options', 'titles', 'last_sync', 'last_update', 'creation_date'
     ];
 
     /**

@@ -3,9 +3,12 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Chapter extends Model
 {
+    use HasFactory;
+
     public $timestamps = false;
 
     /**
