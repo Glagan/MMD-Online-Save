@@ -60,7 +60,7 @@ class UserController extends Controller
 
 		$user = User::make([
 			'username' => $request->input('username'),
-			'options' => \json_encode($request->input('options', ''))
+			'options' => \json_encode($request->input('options', []))
 		]);
 		$user->password = Hash::make($request->input('password'));
 		$user->generateToken();
