@@ -16,7 +16,6 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 */
 
 $app = require __DIR__.'/bootstrap/app.php';
-$app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------
