@@ -1,5 +1,5 @@
-> This project is outdated, use the new version over at https://github.com/Glagan/SyncDex
-> No replacement for custom save servers has been made yet, and other methods are used
+> This project is outdated, use the new version over at https://github.com/Glagan/SyncDex  
+> No replacement for custom save servers has been made yet, and other methods are preferred
 
 # MyMangaDex - Online Save
 
@@ -26,7 +26,7 @@ Create the database with the same name you wrote in the `.env` file.
 With a database ready, you can create the tables by running:
 
 ```bash
-php artisan migratre:fresh
+php artisan migrate:fresh
 ```
 
 You're ready to go ! You can update the API url in the MyMangaDex options to use the one you just hosted.
